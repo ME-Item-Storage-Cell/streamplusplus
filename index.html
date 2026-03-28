@@ -4554,6 +4554,34 @@ function syncMobileNav(){
   },{passive:true});
 })();
 
+/* ════ MAGIC LINK HANDLER ════════════════════════════════
+   When Supabase redirects back after clicking the magic link,
+   the access_token is in the URL hash. We grab it, store the
+   session, then strip the hash so the URL looks clean.
+════════════════════════════════════════════════════════ */
+(function(){
+  const hash=window.location.hash;
+  if(hash&&hash.includes('access_token')){
+    const params=new URLSearchParams(hash.replace(/^#/,''));
+    const access_token=params.get('access_token');
+    const refresh_token=params.get('refresh_token');
+    const expires_at=params.get('expires_at');
+    if(access_token){
+      // Fetch user info then store session
+      fetch('https://wbbiqcdmkmydwshzvize.supabase.co/auth/v1/user',{
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+access_token}
+      }).then(r=>r.json()).then(user=>{
+        const sess={access_token,refresh_token,expires_at,user};
+        localStorage.setItem('sb_session',JSON.stringify(sess));
+        // Clean the URL
+        history.replaceState(null,'',window.location.pathname);
+      }).catch(()=>{
+        history.replaceState(null,'',window.location.pathname);
+      });
+    }
+  }
+})();
+
 /* ════ INIT ═════════════════════════════════════════════ */
 (function(){
   const done=localStorage.getItem(OB_KEY);
