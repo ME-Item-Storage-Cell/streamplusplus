@@ -1,0 +1,37 @@
+{
+  "name": "stream.",
+  "short_name": "stream.",
+  "description": "Your personal school productivity app",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f3f6",
+  "theme_color": "#f2f3f6",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "./?page=dash",
+      "description": "Go to Dashboard"
+    },
+    {
+      "name": "Calendar",
+      "url": "./?page=cal",
+      "description": "Go to Calendar"
+    }
+  ]
+}
