@@ -189,7 +189,14 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
   /* Push page content above bottom bar */
   #page-stack{bottom:68px!important}
   #sw-float,#clock-widget{top:12px!important}
+  /* Hide clock widget on mobile — not needed on mobile home */
+  #clock-widget,#sw-float{display:none!important}
   #sync-badge{bottom:80px}
+  /* On mobile home, sync badge appears near top right under the pill */
+  body:has(#pg-mobile.act) #sync-badge{
+    bottom:auto;top:calc(52px + env(safe-area-inset-top,0px));
+    right:12px;left:auto;width:calc(100vw - 24px);max-width:340px;
+  }
 
   /* Night mode bottom bar */
   body.night #mobile-nav{
@@ -216,6 +223,543 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
   }
   #swipe-hint.show{opacity:.7}
 }
+
+/* ── MOBILE HOME PAGE ───────────────────────────────────
+   Completely separate UI for mobile — hidden on desktop    */
+
+/* Mobile-only overlays — hidden on desktop */
+#mh-sync-pill{display:none}
+/* FAB: hidden globally, shown via media query on mobile */
+#mh-quick-fab{display:none}
+
+/* Desktop: hide mobile page entirely */
+@media(min-width:641px){
+  #pg-mobile{display:none!important}
+}
+
+@media(max-width:640px){
+  /* Sync pill — top right of mobile home */
+  #mh-sync-pill{
+    position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;
+    z-index:400;
+    display:flex;align-items:center;gap:6px;
+    padding:7px 12px 7px 9px;
+    background:rgba(252,252,254,.82);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:20px;
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    box-shadow:0 4px 16px rgba(0,0,0,.08),0 1px 0 rgba(255,255,255,.9) inset;
+    font-size:11px;font-family:'Geist Mono',monospace;color:var(--t2);
+    letter-spacing:.04em;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:opacity .15s;
+  }
+  body.night #mh-sync-pill{
+    background:rgba(18,20,28,.82);border-color:rgba(255,255,255,.1);
+    box-shadow:0 4px 16px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.06) inset;
+  }
+  #mh-sync-pill:active{opacity:.7}
+  #mh-sync-dot{
+    width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0;
+    transition:background .3s;
+  }
+  #mh-sync-dot.on{background:#16a34a}
+  /* Kill fancy cursor on mobile entirely */
+  #cdot,#ctrail{display:none!important}
+  body{cursor:auto!important}
+  *{cursor:auto!important}
+  a,button,[onclick]{cursor:pointer!important}
+  input,textarea,select{cursor:text!important}
+  /* Hide bottom nav when on mobile home page */
+  #pg-mobile.act ~ #mobile-nav,
+  body:has(#pg-mobile.act) #mobile-nav{display:none!important}
+  /* Mobile page styling when active */
+  #pg-mobile.act{
+    display:block!important;
+    padding:0;
+    position:absolute;inset:0;
+    overflow:hidden;
+  }
+  /* On mobile, hide pg-dash completely — pg-mobile replaces it */
+  #pg-dash{display:none!important}
+  body:has(#pg-mobile.act) #page-stack{overflow:hidden!important}
+
+  /* ── TWO-PANEL PAGER ─────────────────────────────────── */
+  #mh-pager{
+    display:flex;
+    width:200%;
+    height:100%;
+    transition:transform .42s cubic-bezier(.4,0,.2,1);
+    will-change:transform;
+  }
+  #mh-pager.on-tiles{transform:translateX(-50%)}
+
+  /* Panel 1: hero — full screen */
+  #mh-panel-hero{
+    width:50%;
+    height:100%;
+    position:relative;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:space-between;
+    padding:calc(env(safe-area-inset-top,0px) + 56px) 28px calc(env(safe-area-inset-bottom,0px) + 36px);
+    overflow:hidden;
+    /* Dark gradient background — looks great over the app's ambient gradient */
+    background:linear-gradient(160deg,
+      rgba(20,20,40,.92) 0%,
+      rgba(10,10,28,.96) 60%,
+      rgba(14,10,38,.98) 100%);
+  }
+
+  /* Animated background orbs */
+  .mh-orb{position:absolute;border-radius:50%;pointer-events:none}
+  .mh-orb-1{
+    width:300px;height:300px;top:-80px;left:-80px;
+    background:radial-gradient(circle,rgba(99,132,255,.22) 0%,transparent 70%);
+    animation:mhOrb1 8s ease-in-out infinite;
+  }
+  .mh-orb-2{
+    width:250px;height:250px;bottom:-60px;right:-60px;
+    background:radial-gradient(circle,rgba(147,51,234,.18) 0%,transparent 70%);
+    animation:mhOrb2 10s ease-in-out infinite;
+  }
+  .mh-orb-3{
+    width:180px;height:180px;top:40%;left:50%;transform:translateX(-50%);
+    background:radial-gradient(circle,rgba(16,163,74,.1) 0%,transparent 70%);
+    animation:mhOrb3 12s ease-in-out infinite;
+  }
+  @keyframes mhOrb1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,20px) scale(1.1)}}
+  @keyframes mhOrb2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,-30px) scale(1.08)}}
+  @keyframes mhOrb3{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.15)}}
+
+  /* Logo */
+  .mh-logo-wrap{text-align:center;z-index:1}
+  .mh-wordmark{
+    font-size:48px;font-weight:700;letter-spacing:-.04em;
+    color:#fff;line-height:1;
+    animation:mhFadeUp .6s cubic-bezier(.34,1.1,.64,1) both;
+  }
+  .mh-dot-logo{color:rgba(148,163,255,.9)}
+  .mh-tagline{
+    font-size:12px;font-family:'Geist Mono',monospace;
+    color:rgba(255,255,255,.4);letter-spacing:.12em;
+    text-transform:uppercase;margin-top:8px;
+    animation:mhFadeUp .6s .1s cubic-bezier(.34,1.1,.64,1) both;
+  }
+
+  /* Countdown */
+  .mh-countdown-wrap{
+    position:relative;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    z-index:1;
+    animation:mhFadeUp .6s .15s cubic-bezier(.34,1.1,.64,1) both;
+  }
+  .mh-progress-arc{
+    position:absolute;width:220px;height:220px;
+    pointer-events:none;
+  }
+  .mh-countdown-label{
+    font-size:10px;font-family:'Geist Mono',monospace;
+    color:rgba(255,255,255,.4);text-transform:uppercase;
+    letter-spacing:.16em;margin-bottom:8px;
+  }
+  .mh-countdown-timer{
+    font-size:64px;font-weight:700;letter-spacing:-.04em;
+    color:#fff;line-height:1;font-variant-numeric:tabular-nums;
+    font-family:'Geist Mono',monospace;
+  }
+  .mh-countdown-sub{
+    font-size:14px;color:rgba(255,255,255,.6);
+    margin-top:10px;font-weight:500;letter-spacing:-.01em;
+    text-align:center;max-width:200px;
+  }
+
+  /* Footer */
+  .mh-hero-foot{text-align:center;z-index:1;animation:mhFadeUp .6s .2s cubic-bezier(.34,1.1,.64,1) both}
+  .mh-hero-date{font-size:12px;font-family:'Geist Mono',monospace;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase}
+  .mh-hero-next{font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;font-weight:500}
+
+  /* Swipe hint */
+  .mh-swipe-hint{
+    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    z-index:1;
+    animation:mhPulse 2.5s 1.5s ease-in-out infinite;
+  }
+  .mh-swipe-hint span{font-size:8px;font-family:'Geist Mono',monospace;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;writing-mode:vertical-rl}
+  @keyframes mhPulse{0%,100%{opacity:.4;transform:translateY(-50%) translateX(0)}50%{opacity:.9;transform:translateY(-50%) translateX(4px)}}
+
+  /* Entry animations */
+  @keyframes mhFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Panel 2: tiles */
+  #mh-panel-tiles{
+    width:50%;height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+  .mh-tiles-header{
+    padding:calc(env(safe-area-inset-top,0px) + 20px) 20px 4px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .mh-tiles-title{
+    font-size:22px;font-weight:700;letter-spacing:-.03em;color:var(--text);
+  }
+  .mh-scroll{padding:0 14px calc(90px + env(safe-area-inset-bottom,0px));}
+  .mh-greeting-row{margin-bottom:18px;padding-top:4px}
+
+  /* Page indicator dots — bottom of hero panel */
+  .mh-page-dots{
+    position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+    left:50%;transform:translateX(-50%);
+    display:flex;gap:6px;z-index:2;
+  }
+  .mh-page-dot{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(255,255,255,.25);
+    transition:all .3s cubic-bezier(.34,1.4,.64,1);
+  }
+  .mh-page-dot.on{background:#fff;transform:scale(1.4)}
+
+  /* ── FULL-WIDTH TILES ────────────────────────────────── */
+  .mh-tiles{display:flex;flex-direction:column;gap:14px;padding-bottom:90px}
+  .mh-tile{
+    border-radius:24px;
+    padding:20px 20px 18px;
+    position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.82);
+    background:rgba(252,252,254,.68);
+    box-shadow:0 8px 32px rgba(0,0,0,.07),0 1.5px 0 rgba(255,255,255,.95) inset;
+    backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
+    min-height:120px;
+  }
+  body.night .mh-tile{
+    background:rgba(22,23,30,.72);border-color:rgba(255,255,255,.08);
+    box-shadow:0 8px 32px rgba(0,0,0,.32),0 1px 0 rgba(255,255,255,.05) inset;
+  }
+  .mh-tile::before{
+    content:'';position:absolute;top:0;left:8%;right:8%;
+    height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);
+  }
+  body.night .mh-tile::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
+  .mh-t-rem{background:linear-gradient(145deg,rgba(99,132,255,.15),rgba(252,252,254,.7));border-color:rgba(148,163,255,.35)}
+  body.night .mh-t-rem{background:linear-gradient(145deg,rgba(99,132,255,.25),rgba(22,23,30,.72));border-color:rgba(148,163,255,.2)}
+  .mh-t-hw{background:linear-gradient(145deg,rgba(147,51,234,.12),rgba(252,252,254,.7));border-color:rgba(192,132,252,.32)}
+  body.night .mh-t-hw{background:linear-gradient(145deg,rgba(147,51,234,.24),rgba(22,23,30,.72));border-color:rgba(192,132,252,.2)}
+  .mh-t-ex{background:linear-gradient(145deg,rgba(220,38,38,.11),rgba(252,252,254,.7));border-color:rgba(248,113,113,.3)}
+  body.night .mh-t-ex{background:linear-gradient(145deg,rgba(220,38,38,.22),rgba(22,23,30,.72));border-color:rgba(248,113,113,.2)}
+  .mh-t-sched{background:linear-gradient(145deg,rgba(16,163,74,.11),rgba(252,252,254,.7));border-color:rgba(52,211,153,.3)}
+  body.night .mh-t-sched{background:linear-gradient(145deg,rgba(16,163,74,.22),rgba(22,23,30,.72));border-color:rgba(52,211,153,.2)}
+  .mh-t-cal{background:rgba(252,252,254,.72);border-color:rgba(255,255,255,.85)}
+  body.night .mh-t-cal{background:rgba(22,23,30,.72);border-color:rgba(255,255,255,.1)}
+  .mh-tile-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .mh-tile-label{font-size:9px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.16em;color:var(--t3);font-weight:600}
+  /* Completion ring */
+  .mh-ring{position:absolute;top:16px;right:16px;width:72px;height:72px}
+  /* Reminder rows */
+  .mh-rrow{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border)}
+  .mh-rrow:last-child{border-bottom:none;padding-bottom:0}
+  .mh-rrow:first-child{padding-top:0}
+  .mh-rcheck{width:26px;height:26px;border:2px solid var(--borders);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all .15s;min-width:26px}
+  .mh-rrow.done .mh-rcheck{background:var(--text);border-color:var(--text)}
+  .mh-rtxt{flex:1;font-size:15px;font-weight:500;line-height:1.3;min-width:0;padding-right:84px}
+  .mh-rrow.done .mh-rtxt{text-decoration:line-through;color:var(--t3);font-weight:400}
+  .mh-rpri{font-size:9px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:20px;flex-shrink:0}
+  .mh-rpri.h{background:rgba(220,38,38,.12);color:#dc2626}
+  .mh-rpri.l{background:rgba(16,163,74,.12);color:#16a34a}
+  /* HW rows */
+  .mh-hrow{display:flex;align-items:center;gap:14px;padding:13px 0 13px 16px;border-bottom:1px solid var(--border);border-left:4px solid transparent;margin-left:-20px}
+  .mh-hrow:last-child{border-bottom:none;padding-bottom:0}
+  .mh-hrow:first-child{padding-top:0}
+  .mh-hcheck{width:26px;height:26px;border:2px solid var(--borders);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all .15s;min-width:26px}
+  .mh-hrow.done .mh-hcheck{background:var(--text);border-color:var(--text)}
+  .mh-htxt{font-size:15px;font-weight:500;line-height:1.3;flex:1;min-width:0}
+  .mh-hrow.done .mh-htxt{text-decoration:line-through;color:var(--t3);font-weight:400}
+  .mh-hmeta{font-size:11px;font-family:'Geist Mono',monospace;color:var(--t3);margin-top:3px}
+  .mh-overdue{color:#e53e3e!important}
+  /* Exam rows */
+  .mh-xrow{display:flex;align-items:center;gap:20px;padding:14px 0;border-bottom:1px solid var(--border)}
+  .mh-xrow:last-child{border-bottom:none;padding-bottom:0}
+  .mh-xrow:first-child{padding-top:0}
+  .mh-xring{width:72px;height:72px;flex-shrink:0}
+  .mh-xinfo{flex:1;min-width:0}
+  .mh-xname{font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mh-xdate{font-size:11px;font-family:'Geist Mono',monospace;color:var(--t3);margin-top:4px}
+  /* Schedule rows */
+  .mh-srow{display:flex;align-items:stretch;gap:14px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .mh-srow:last-child{border-bottom:none;padding-bottom:0}
+  .mh-srow:first-child{padding-top:0}
+  .mh-stime{font-size:12px;font-family:'Geist Mono',monospace;color:var(--t3);width:46px;flex-shrink:0;padding-top:2px}
+  .mh-sbar{width:4px;border-radius:3px;background:var(--border);flex-shrink:0;min-height:24px}
+  .mh-sbar.cur{background:#2563eb}
+  .mh-sname{font-size:15px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-top:1px}
+  .mh-scur .mh-sname{font-weight:700;color:#2563eb;font-size:16px}
+  .mh-sroom{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);flex-shrink:0;padding-top:3px}
+  /* Calendar */
+  .mh-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+  .mh-dh{font-size:9px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);text-align:center;padding:3px 0}
+  .mh-cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:7px;position:relative;-webkit-tap-highlight-color:transparent;color:var(--text)}
+  .mh-cd:active{background:rgba(0,0,0,.06)}
+  .mh-cd.other{color:var(--t3)}
+  .mh-cd.today{background:var(--text)!important;color:#fff!important;font-weight:600}
+  .mh-cd.sel:not(.today){background:rgba(0,0,0,.07)}
+  body.night .mh-cd.sel:not(.today){background:rgba(255,255,255,.1)}
+  .mh-cd.dot::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--t2)}
+  .mh-cd.today.dot::after{background:rgba(255,255,255,.55)}
+  .mh-day-strip{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .mh-day-lbl{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+  .mh-day-ev{display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 9px;background:rgba(0,0,0,.04);border-radius:8px;margin-bottom:4px}
+  body.night .mh-day-ev{background:rgba(255,255,255,.06)}
+  .mh-day-dot{width:6px;height:6px;border-radius:50%;background:var(--t2);flex-shrink:0}
+  .mh-cal-nbtn{width:26px;height:26px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;color:var(--t2);-webkit-tap-highlight-color:transparent;transition:all .12s}
+  body.night .mh-cal-nbtn{background:rgba(255,255,255,.08)}
+  .mh-cal-nbtn:active{opacity:.6}
+  /* Empty states */
+  .mh-nil{font-size:13px;color:var(--t3);font-family:'Geist Mono',monospace;text-align:center;padding:20px 0 8px;letter-spacing:.04em}
+
+  /* Tile header */
+  .mh-tile-hd{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .mh-tile-label{
+    font-size:10px;font-family:'Geist Mono',monospace;text-transform:uppercase;
+    letter-spacing:.12em;color:var(--t3);font-weight:500;
+  }
+  .mh-tile-action{
+    font-size:11px;font-family:'Geist Mono',monospace;color:var(--t2);
+    -webkit-tap-highlight-color:transparent;cursor:pointer;padding:2px 0;
+  }
+  /* Empty state */
+  .mh-nil{font-size:12px;color:var(--t3);font-family:'Geist Mono',monospace;
+    text-align:center;padding:10px 0 4px;letter-spacing:.04em}
+  /* Calendar tile */
+  .mh-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .mh-cal-month{font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .mh-cal-nbtn{
+    width:26px;height:26px;border-radius:8px;border:1px solid var(--border);
+    background:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;
+    color:var(--t2);-webkit-tap-highlight-color:transparent;transition:all .12s;
+  }
+  body.night .mh-cal-nbtn{background:rgba(255,255,255,.08)}
+  .mh-cal-nbtn:active{opacity:.6}
+  .mh-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+  .mh-dh{font-size:9px;font-family:'Geist Mono',monospace;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--t3);text-align:center;padding:3px 0}
+  .mh-cd{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    font-size:12px;border-radius:7px;position:relative;
+    -webkit-tap-highlight-color:transparent;color:var(--text);
+  }
+  .mh-cd:active{background:rgba(0,0,0,.06)}
+  .mh-cd.other{color:var(--t3)}
+  .mh-cd.today{background:var(--text)!important;color:#fff!important;font-weight:600}
+  .mh-cd.sel:not(.today){background:rgba(0,0,0,.07)}
+  body.night .mh-cd.sel:not(.today){background:rgba(255,255,255,.1)}
+  .mh-cd.dot::after{
+    content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+    width:3px;height:3px;border-radius:50%;background:var(--t2);
+  }
+  .mh-cd.today.dot::after{background:rgba(255,255,255,.55)}
+  .mh-day-strip{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+  .mh-day-lbl{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);
+    text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+  .mh-day-ev{
+    display:flex;align-items:center;gap:8px;font-size:12px;
+    padding:6px 9px;background:rgba(0,0,0,.04);border-radius:8px;margin-bottom:4px;
+  }
+  body.night .mh-day-ev{background:rgba(255,255,255,.06)}
+  .mh-day-dot{width:6px;height:6px;border-radius:50%;background:var(--t2);flex-shrink:0}
+  /* Reminder rows */
+  /* Reminder rows */
+  .mh-rrow{
+    display:flex;align-items:center;gap:11px;
+    padding:11px 0;border-bottom:1px solid var(--border);
+  }
+  .mh-rrow:last-child{border-bottom:none;padding-bottom:2px}
+  .mh-rrow:first-child{padding-top:2px}
+  .mh-rcheck{
+    width:20px;height:20px;border:1.5px solid var(--borders);border-radius:6px;
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;transition:all .12s;min-width:20px;
+  }
+  .mh-rrow.done .mh-rcheck{background:var(--text);border-color:var(--text)}
+  .mh-rtxt{flex:1;font-size:14px;line-height:1.35;min-width:0}
+  .mh-rrow.done .mh-rtxt{text-decoration:line-through;color:var(--t3)}
+  .mh-rpri{font-size:9px;font-family:'Geist Mono',monospace;text-transform:uppercase;
+    letter-spacing:.07em;padding:2px 7px;border-radius:20px;flex-shrink:0}
+  .mh-rpri.h{background:rgba(220,38,38,.1);color:#dc2626}
+  .mh-rpri.l{background:rgba(16,163,74,.1);color:#16a34a}
+  /* HW rows */
+  .mh-hrow{
+    display:flex;align-items:flex-start;gap:11px;
+    padding:11px 0;border-bottom:1px solid var(--border);
+    border-left:3px solid transparent;margin-left:-13px;padding-left:10px;
+  }
+  .mh-hrow:last-child{border-bottom:none;padding-bottom:2px}
+  .mh-hrow:first-child{padding-top:2px}
+  .mh-hcheck{
+    width:20px;height:20px;border:1.5px solid var(--borders);border-radius:6px;
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    margin-top:1px;-webkit-tap-highlight-color:transparent;transition:all .12s;min-width:20px;
+  }
+  .mh-hrow.done .mh-hcheck{background:var(--text);border-color:var(--text)}
+  .mh-htxt{font-size:14px;line-height:1.35;min-width:0}
+  .mh-hrow.done .mh-htxt{text-decoration:line-through;color:var(--t3)}
+  .mh-hmeta{font-size:11px;font-family:'Geist Mono',monospace;color:var(--t3);margin-top:3px}
+  .mh-overdue{color:#e53e3e!important}
+  /* Schedule rows */
+  .mh-srow{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 0;border-bottom:1px solid var(--border);
+  }
+  .mh-srow:last-child{border-bottom:none;padding-bottom:0}
+  .mh-srow:first-child{padding-top:0}
+  .mh-stime{font-size:11px;font-family:'Geist Mono',monospace;color:var(--t3);width:44px;flex-shrink:0}
+  .mh-sname{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mh-sroom{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);flex-shrink:0}
+  .mh-scur{font-weight:600}
+  .mh-scur .mh-sname{font-weight:600}
+  /* Quick add sheet */
+  #mh-bg{
+    position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.32);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    opacity:0;pointer-events:none;transition:opacity .22s;
+  }
+  #mh-bg.on{opacity:1;pointer-events:all}
+  #mh-sheet{
+    position:fixed;bottom:0;left:0;right:0;z-index:9001;
+    background:var(--glass-bd);
+    border-top:1px solid var(--border);
+    border-radius:22px 22px 0 0;
+    padding:0 16px calc(24px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -12px 48px rgba(0,0,0,.16);
+    transform:translateY(100%);
+    transition:transform .28s cubic-bezier(.32,0,.67,0);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  }
+  #mh-sheet.on{transform:translateY(0);transition:transform .34s cubic-bezier(.34,1.1,.64,1)}
+  .mh-handle{width:36px;height:4px;border-radius:2px;background:var(--border);
+    margin:14px auto 16px;opacity:.5}
+  .mh-stabs{display:flex;background:rgba(0,0,0,.05);border-radius:11px;padding:3px;margin-bottom:16px}
+  body.night .mh-stabs{background:rgba(255,255,255,.07)}
+  .mh-stab{
+    flex:1;padding:7px 4px;border-radius:8px;font-size:12px;font-weight:500;
+    text-align:center;border:none;background:transparent;color:var(--t2);
+    -webkit-tap-highlight-color:transparent;transition:all .15s;cursor:pointer;
+    font-family:'Geist',sans-serif;
+  }
+  .mh-stab.on{background:var(--glass-bd);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  body.night .mh-stab.on{background:rgba(255,255,255,.12)}
+  .mh-spane{display:none}
+  .mh-spane.on{display:block}
+  .mh-si{
+    width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:13px;
+    font-family:'Geist',sans-serif;font-size:14px;outline:none;
+    background:rgba(255,255,255,.65);color:var(--text);
+    box-sizing:border-box;margin-bottom:10px;
+    -webkit-appearance:none;
+  }
+  body.night .mh-si{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);color:var(--text)}
+  .mh-si:focus{border-color:var(--borders)}
+  .mh-srow2{display:flex;gap:8px;margin-bottom:10px}
+  .mh-srow2 .mh-si{margin-bottom:0;flex:1}
+  .mh-sbtn{
+    width:100%;padding:14px;border-radius:14px;margin-top:4px;
+    background:var(--text);color:#fff;font-family:'Geist',sans-serif;
+    font-size:14px;font-weight:600;border:none;
+    -webkit-tap-highlight-color:transparent;transition:transform .12s,opacity .12s;
+    cursor:pointer;
+  }
+  .mh-sbtn:active{transform:scale(.97);opacity:.8}
+  body.night .mh-sbtn{background:rgba(255,255,255,.88);color:#111}
+  /* FAB */
+  /* Hide both FABs on mobile */
+  #mh-fab,#qa-btn{display:none!important}
+
+  /* ── TILE ENTRY ANIMATIONS ───────────────────────────── */
+  @keyframes mhTileIn{
+    from{opacity:0;transform:translateY(18px) scale(.97)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+  .mh-tile{animation:mhTileIn .42s cubic-bezier(.34,1.1,.64,1) both}
+  .mh-tile:nth-child(1){animation-delay:.05s}
+  .mh-tile:nth-child(2){animation-delay:.10s}
+  .mh-tile:nth-child(3){animation-delay:.15s}
+  .mh-tile:nth-child(4){animation-delay:.20s}
+  .mh-tile:nth-child(5){animation-delay:.25s}
+  /* Row entry */
+  @keyframes mhRowIn{
+    from{opacity:0;transform:translateX(-8px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+  .mh-rrow,.mh-hrow,.mh-srow,.mh-xrow{
+    animation:mhRowIn .3s cubic-bezier(.4,0,.2,1) both;
+  }
+  /* Tick animation on check */
+  @keyframes mhTick{0%{transform:scale(1.4)}50%{transform:scale(.85)}100%{transform:scale(1)}}
+  .mh-rcheck.ticked,.mh-hcheck.ticked{animation:mhTick .3s cubic-bezier(.34,1.4,.64,1)}
+  /* Ring fill animation */
+  @keyframes mhRingFill{from{stroke-dashoffset:113}to{stroke-dashoffset:var(--target-offset)}}
+  /* Hero entry */
+  @keyframes mhHeroIn{
+    from{opacity:0;transform:translateY(-12px) scale(.96)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+  .mh-hero{animation:mhHeroIn .5s cubic-bezier(.34,1.1,.64,1) both}
+  .mh-dots{animation:mhHeroIn .5s .1s cubic-bezier(.34,1.1,.64,1) both}
+  /* Sheet slide */
+  #mh-sheet.on{animation:none} /* already has transition */
+
+  /* ── DRAG REORDER ────────────────────────────────────── */
+  .mh-tile.dragging{
+    opacity:.55;
+    transform:scale(.97) rotate(1.5deg)!important;
+    box-shadow:0 20px 50px rgba(0,0,0,.22)!important;
+    z-index:100;
+    transition:none!important;
+  }
+  .mh-tile.drag-over{
+    transform:translateY(-4px) scale(1.01)!important;
+    box-shadow:0 16px 40px rgba(0,0,0,.14)!important;
+    transition:transform .15s,box-shadow .15s;
+  }
+  /* Drag handle hint — subtle dots top-left */
+  .mh-tile::after{
+    content:'⠿';
+    position:absolute;top:14px;left:14px;
+    font-size:14px;color:var(--border);
+    pointer-events:none;
+    opacity:0;transition:opacity .2s;
+  }
+  .mh-tile.drag-ready::after{opacity:1}
+
+  /* ── BIGGER GRAPHICS IN TILES ────────────────────────── */
+  /* Schedule bar — thicker */
+  .mh-srow{padding:12px 0;gap:14px}
+  .mh-stime{font-size:12px;width:48px}
+
+  /* ── QUICK-ADD FAB — always visible, bottom centre ─── */
+  #mh-quick-fab{
+    display:flex!important;
+    position:fixed;
+    bottom:calc(28px + env(safe-area-inset-bottom,0px));
+    left:50%;transform:translateX(-50%);
+    z-index:8000;
+    width:60px;height:60px;border-radius:20px;
+    background:var(--text);color:#fff;border:none;
+    align-items:center;justify-content:center;
+    box-shadow:0 8px 28px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.15) inset;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .22s cubic-bezier(.34,1.4,.64,1),box-shadow .2s,border-radius .2s;
+  }
+  body.night #mh-quick-fab{background:rgba(240,240,255,.92);color:#111}
+  #mh-quick-fab:active{transform:translateX(-50%) scale(.88)}
+  #mh-quick-fab.open{border-radius:50%}
+  #mh-quick-fab.open svg{transform:rotate(45deg)}
+  #mh-quick-fab svg{transition:transform .25s cubic-bezier(.34,1.4,.64,1)}
+
+} /* end @media(max-width:640px) */
+
 /* ── QUICK ADD FAB ──────────────────────────────────── */
 #qa-btn{
   position:fixed;bottom:28px;right:28px;z-index:8000;
@@ -1378,6 +1922,129 @@ body.night #ctx-cursor-item.active-cursor{background:rgba(255,255,255,.10);borde
 <main id="main">
 <div id="page-stack">
 
+<!-- MOBILE HOME — its own page, only shown on mobile -->
+<div class="pg" id="pg-mobile">
+
+  <!-- Two-panel horizontal slider -->
+  <div id="mh-pager">
+
+    <!-- PANEL 1: Hero — stream. logo + period countdown -->
+    <div id="mh-panel-hero">
+      <!-- Background gradient orbs (animate subtly) -->
+      <div class="mh-orb mh-orb-1"></div>
+      <div class="mh-orb mh-orb-2"></div>
+      <div class="mh-orb mh-orb-3"></div>
+
+      <!-- Logo -->
+      <div class="mh-logo-wrap">
+        <div class="mh-wordmark">stream<span class="mh-dot-logo">.</span></div>
+        <div class="mh-tagline" id="mh-greet-hero"></div>
+      </div>
+
+      <!-- Main countdown -->
+      <div class="mh-countdown-wrap">
+        <div class="mh-countdown-label" id="mh-count-label">next period</div>
+        <div class="mh-countdown-timer" id="mh-count-timer">--:--</div>
+        <div class="mh-countdown-sub" id="mh-count-sub"></div>
+        <!-- Progress arc around timer -->
+        <svg class="mh-progress-arc" id="mh-arc" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+          <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6"
+            stroke-dasharray="628" stroke-dashoffset="628" id="mh-arc-fill"
+            stroke-linecap="round" transform="rotate(-90 110 110)"/>
+        </svg>
+      </div>
+
+      <!-- Date + next up -->
+      <div class="mh-hero-foot">
+        <div class="mh-hero-date" id="mh-hero-date"></div>
+        <div class="mh-hero-next" id="mh-hero-next"></div>
+      </div>
+
+      <!-- Swipe hint -->
+      <div class="mh-swipe-hint">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" opacity=".5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <span>swipe for tiles</span>
+      </div>
+
+      <!-- Page dots -->
+      <div class="mh-page-dots">
+        <div class="mh-page-dot on" id="mh-pd-0"></div>
+        <div class="mh-page-dot" id="mh-pd-1"></div>
+      </div>
+    </div><!-- /mh-panel-hero -->
+
+    <!-- PANEL 2: Tiles -->
+    <div id="mh-panel-tiles">
+      <div class="mh-scroll">
+
+        <!-- Header -->
+        <div class="mh-tiles-header">
+          <span class="mh-tiles-title">stream<span style="opacity:.5">.</span></span>
+        </div>
+
+        <!-- TILES -->
+        <div class="mh-tiles">
+
+          <!-- Reminders tile -->
+          <div class="mh-tile mh-t-rem">
+            <div class="mh-tile-hd"><span class="mh-tile-label">Reminders</span></div>
+            <div id="mh-rems"></div>
+            <svg class="mh-ring" id="mh-ring-rem" viewBox="0 0 44 44">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(99,132,255,.15)" stroke-width="6"/>
+              <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(99,132,255,.85)" stroke-width="6"
+                stroke-dasharray="113" stroke-dashoffset="113" id="mh-ring-rem-arc"
+                stroke-linecap="round" transform="rotate(-90 22 22)"/>
+              <text x="22" y="25" text-anchor="middle" font-size="10" font-weight="800"
+                fill="rgba(99,132,255,.9)" font-family="'Geist Mono',monospace" id="mh-ring-rem-txt">—</text>
+            </svg>
+          </div>
+
+          <!-- Homework tile -->
+          <div class="mh-tile mh-t-hw">
+            <div class="mh-tile-hd"><span class="mh-tile-label">Homework</span></div>
+            <div id="mh-hw"></div>
+          </div>
+
+          <!-- Exams tile -->
+          <div class="mh-tile mh-t-ex">
+            <div class="mh-tile-hd"><span class="mh-tile-label">Upcoming Exams</span></div>
+            <div id="mh-exams"></div>
+          </div>
+
+          <!-- Schedule tile -->
+          <div class="mh-tile mh-t-sched">
+            <div class="mh-tile-hd"><span class="mh-tile-label">Today's Schedule</span></div>
+            <div id="mh-sched"></div>
+          </div>
+
+          <!-- Calendar tile -->
+          <div class="mh-tile mh-t-cal">
+            <div class="mh-tile-hd">
+              <span class="mh-tile-label">Calendar</span>
+              <div style="display:flex;align-items:center;gap:8px">
+                <button class="mh-cal-nbtn" onclick="mhCal(-1)"><svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg></button>
+                <span class="mh-cal-month" id="mh-cal-month"></span>
+                <button class="mh-cal-nbtn" onclick="mhCal(1)"><svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M9 5l7 7-7 7"/></svg></button>
+              </div>
+            </div>
+            <div class="mh-cal-grid" id="mh-cal-grid"></div>
+            <div id="mh-day-strip" style="display:none">
+              <div class="mh-day-strip">
+                <div class="mh-day-lbl" id="mh-day-lbl"></div>
+                <div id="mh-day-evs"></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /mh-tiles -->
+      </div><!-- /mh-scroll -->
+    </div><!-- /mh-panel-tiles -->
+
+  </div><!-- /mh-pager -->
+
+</div><!-- /pg-mobile -->
+
 <!-- DASHBOARD -->
 <div class="pg act" id="pg-dash">
   <div class="home-hero" id="home-hero">
@@ -1663,10 +2330,68 @@ body.night #ctx-cursor-item.active-cursor{background:rgba(255,255,255,.10);borde
 </div>
 
 </div><!-- /page-stack -->
+
+<!-- Mobile fixed overlays — outside page-stack so position:fixed works on iOS -->
+<div id="mh-sync-pill" onclick="toggleSyncBadge()">
+  <div id="mh-sync-dot"></div>
+  <span id="mh-sync-lbl">sync</span>
+</div>
+<button id="mh-quick-fab" onclick="mhFabTap()">
+  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+</button>
 </main>
 </div>
 
 <div id="watermark">created by daniel garg</div>
+
+<!-- Mobile FAB — outside page-stack so it overlays correctly -->
+<button id="mh-fab" onclick="mhOpen('rem')">
+  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+</button>
+
+<!-- Quick-add sheet — outside page-stack so position:fixed works -->
+<div id="mh-bg" onclick="mhClose()"></div>
+<div id="mh-sheet">
+  <div class="mh-handle"></div>
+  <div class="mh-stabs">
+    <button class="mh-stab on" id="mh-tab-rem" onclick="mhTab('rem')">Reminder</button>
+    <button class="mh-stab" id="mh-tab-hw" onclick="mhTab('hw')">Homework</button>
+    <button class="mh-stab" id="mh-tab-ev" onclick="mhTab('ev')">Event</button>
+    <button class="mh-stab" id="mh-tab-ex" onclick="mhTab('ex')">Exam</button>
+  </div>
+  <div class="mh-spane on" id="mh-p-rem">
+    <input class="mh-si" id="mh-ri" placeholder="What to remember…" type="text">
+    <div class="mh-srow2">
+      <select class="mh-si" id="mh-rs"><option value="">No subject</option><option>mathematics</option><option>english</option><option>science</option><option>music</option><option>commerce</option><option>geography</option><option>history</option><option>pdhpe</option></select>
+      <select class="mh-si" id="mh-rp"><option value="normal">Normal</option><option value="high">High</option><option value="low">Low</option></select>
+    </div>
+    <button class="mh-sbtn" onclick="mhSaveRem()">Add Reminder</button>
+  </div>
+  <div class="mh-spane" id="mh-p-hw">
+    <input class="mh-si" id="mh-hi2" placeholder="Task description…" type="text">
+    <div class="mh-srow2">
+      <select class="mh-si" id="mh-hs"><option value="">No subject</option><option>mathematics</option><option>english</option><option>science</option><option>music</option><option>commerce</option><option>geography</option><option>history</option><option>pdhpe</option></select>
+      <input class="mh-si" id="mh-hd" type="date">
+    </div>
+    <button class="mh-sbtn" onclick="mhSaveHW()">Add Homework</button>
+  </div>
+  <div class="mh-spane" id="mh-p-ev">
+    <input class="mh-si" id="mh-en" placeholder="Event name…" type="text">
+    <div class="mh-srow2">
+      <input class="mh-si" id="mh-ed" type="date">
+      <input class="mh-si" id="mh-et" type="time">
+    </div>
+    <button class="mh-sbtn" onclick="mhSaveEv()">Add Event</button>
+  </div>
+  <div class="mh-spane" id="mh-p-ex">
+    <input class="mh-si" id="mh-xn" placeholder="Exam subject / name…" type="text">
+    <div class="mh-srow2">
+      <input class="mh-si" id="mh-xd" type="date">
+      <input class="mh-si" id="mh-xt" placeholder="e.g. Room 12" type="text">
+    </div>
+    <button class="mh-sbtn" onclick="mhSaveEx()">Add Exam</button>
+  </div>
+</div>
 
 <!-- Mobile bottom nav (hidden on desktop via CSS) -->
 <nav id="mobile-nav" style="display:none">
@@ -2405,6 +3130,8 @@ function applyRemoteData(remote){
     const ics=typeof remote['st_ics']==='string'?JSON.parse(remote['st_ics']):remote['st_ics'];
     localStorage.setItem('st_ics',JSON.stringify(ics));applyICS(ics); // applyICS calls populateSubjectDropdowns
   }
+  // Re-render mobile home if on mobile
+  if(window.innerWidth<=640){mhRenderHeroPanel();mhRenderRems();mhRenderHW();mhRenderCal();mhRenderExams();mhRenderTodayEvs();}
 }
 
 // Push all local data to Supabase (for first-time sync after login)
@@ -3207,6 +3934,12 @@ document.addEventListener('keydown',e=>{
     const PGNAMES=['Dashboard','Calendar','Timetable','Study'];
     const idx=PGS.indexOf(curPage);
 
+    // Arrow keys navigate mobile pager when pg-mobile is active
+    if(document.getElementById('pg-mobile')?.classList.contains('act')){
+      if(e.key==='ArrowRight'){e.preventDefault();mhGoTo(1);return;}
+      if(e.key==='ArrowLeft'){e.preventDefault();mhGoTo(0);return;}
+    }
+
     // Left/right on study page cycles through study tabs
     if(curPage==='study'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){
       e.preventDefault();
@@ -3565,7 +4298,11 @@ function obLaunch(name,icsData){
   applyName(name||localStorage.getItem('st_name')||'');
   if(icsData)applyICS(icsData);
   // Start the app
-  document.getElementById('pg-dash').classList.add('act');
+  if(window.innerWidth<=640){
+    document.getElementById('pg-mobile').classList.add('act');
+  }else{
+    document.getElementById('pg-dash').classList.add('act');
+  }
   tick();renderDash();renderTT();setupScroll();
 }
 
@@ -3872,6 +4609,8 @@ function setSyncStatus(connected,email){
   const sb=document.getElementById('syncbtn');
   const mobileSyncDot=document.getElementById('mobile-sync-dot');
   const mobileSyncBtn=document.getElementById('mobile-syncbtn');
+  const mhDot=document.getElementById('mh-sync-dot');
+  const mhLbl=document.getElementById('mh-sync-lbl');
   if(connected){
     dot.className='sync-dot green';
     title.textContent='Synced';
@@ -3881,6 +4620,8 @@ function setSyncStatus(connected,email){
     if(sb){sb.style.color='#16a34a';sb.title='Synced';}
     if(mobileSyncDot){mobileSyncDot.style.opacity='1';mobileSyncDot.style.background='#16a34a';}
     if(mobileSyncBtn){mobileSyncBtn.style.color='#16a34a';}
+    if(mhDot)mhDot.classList.add('on');
+    if(mhLbl)mhLbl.textContent=email?email.split('@')[0]:'synced';
   }else{
     dot.className='sync-dot grey';
     title.textContent='Sync across devices';
@@ -3892,6 +4633,8 @@ function setSyncStatus(connected,email){
     if(sb){sb.style.color='';sb.title='Sync';}
     if(mobileSyncDot){mobileSyncDot.style.opacity='0';mobileSyncDot.style.background='';}
     if(mobileSyncBtn){mobileSyncBtn.style.color='';}
+    if(mhDot)mhDot.classList.remove('on');
+    if(mhLbl)mhLbl.textContent='sync';
   }
 }
 
@@ -4524,11 +5267,512 @@ checkMobileNav();
 window.addEventListener('resize',checkMobileNav);
 
 function mobileNav(pg,el){
-  const ni=document.querySelector(`.ni[data-page="${pg}"]`);
-  if(ni)goTo(pg,ni);
+  if(pg==='dash'){
+    // On mobile, dash nav shows pg-mobile
+    document.querySelectorAll('.pg').forEach(p=>p.classList.remove('act'));
+    document.getElementById('pg-mobile').classList.add('act');
+    curPage='dash';
+  }else{
+    const ni=document.querySelector(`.ni[data-page="${pg}"]`);
+    if(ni)goTo(pg,ni);
+  }
   document.querySelectorAll('.mni').forEach(n=>n.classList.remove('act'));
   el.classList.add('act');
 }
+
+/* ════ MOBILE HOME ═══════════════════════════════════════ */
+let _mhY=new Date().getFullYear(),_mhM=new Date().getMonth(),_mhSel=null,_mhTab='rem';
+let _mhPage=0; // 0=hero, 1=tiles
+let _mhCountInterval=null;
+
+function mhInit(){
+  if(window.innerWidth>640)return;
+  applyFancyCursor(false);
+  // Default dates
+  const tod=new Date().toISOString().split('T')[0];
+  ['mh-hd','mh-ed','mh-xd'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=tod;});
+  mhRenderAll();
+  mhPagerSetup();
+  mhStartCountdown();
+}
+
+function mhRenderAll(){
+  mhRenderHeroPanel();
+  mhRenderCal();mhRenderSched();mhRenderRems();mhRenderHW();mhRenderExams();mhRenderTodayEvs();
+  setTimeout(mhDragSetup,100);
+}
+
+/* ── PAGER: swipe between hero and tiles ─────────────── */
+function mhGoTo(page){
+  _mhPage=page;
+  const pager=document.getElementById('mh-pager');
+  if(pager)pager.classList.toggle('on-tiles',page===1);
+  document.getElementById('mh-pd-0')?.classList.toggle('on',page===0);
+  document.getElementById('mh-pd-1')?.classList.toggle('on',page===1);
+}
+
+function mhPagerSetup(){
+  // Double-tap anywhere on mobile page opens quick-add
+  let _lastTap=0;
+  document.getElementById('pg-mobile')?.addEventListener('touchend',e=>{
+    // Ignore taps on interactive elements
+    if(e.target.closest('button,a,.mh-rcheck,.mh-hcheck,.mh-cal-nbtn,.mh-tile-action,[onclick]'))return;
+    const now=Date.now();
+    if(now-_lastTap<300){
+      e.preventDefault();
+      if(_mhPage===0){mhGoTo(1);setTimeout(()=>mhOpen('rem'),420);}
+      else{mhOpen('rem');}
+    }
+    _lastTap=now;
+  },{passive:false});
+  const pager=document.getElementById('mh-pager');
+  if(!pager||pager._pagerSetup)return;
+  pager._pagerSetup=true;
+  let startX=0,startY=0,locked=null;
+
+  pager.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    locked=null;
+  },{passive:true});
+
+  pager.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].clientX-startX;
+    const dy=e.touches[0].clientY-startY;
+    if(!locked){
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>8){locked='h';}
+      else if(Math.abs(dy)>8){locked='v';}
+    }
+    // On tiles panel, vertical scroll is handled by the panel itself
+    // On hero panel, horizontal swipe should be fast
+    if(locked==='h'&&_mhPage===0){
+      // Live drag feedback on hero
+      const pct=Math.max(-1,Math.min(0,dx/window.innerWidth));
+      pager.style.transition='none';
+      pager.style.transform=`translateX(calc(-0% + ${dx*0.3}px))`;
+    }
+  },{passive:true});
+
+  pager.addEventListener('touchend',e=>{
+    pager.style.transition='';
+    pager.style.transform='';
+    const dx=e.changedTouches[0].clientX-startX;
+    const dy=e.changedTouches[0].clientY-startY;
+    if(locked==='h'||(!locked&&Math.abs(dx)>Math.abs(dy))){
+      if(dx<-50&&_mhPage===0)mhGoTo(1);
+      else if(dx>50&&_mhPage===1)mhGoTo(0);
+    }
+  });
+}
+
+/* ── HERO PANEL: countdown + info ───────────────────── */
+function mhRenderHeroPanel(){
+  const now=new Date();
+  const name=localStorage.getItem('st_name')||'';
+  const h=now.getHours();
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  const greetEl=document.getElementById('mh-greet-hero');
+  if(greetEl)greetEl.textContent=greet+(name?', '+name.charAt(0).toUpperCase()+name.slice(1):'');
+  const dateEl=document.getElementById('mh-hero-date');
+  if(dateEl)dateEl.textContent=now.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+  mhUpdateCountdown();
+}
+
+function mhStartCountdown(){
+  mhUpdateCountdown();
+  if(_mhCountInterval)clearInterval(_mhCountInterval);
+  _mhCountInterval=setInterval(mhUpdateCountdown,1000);
+}
+
+function mhUpdateCountdown(){
+  const now=new Date();
+  const nm=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  const DOW=['sun','mon','tue','wed','thu','fri','sat'][now.getDay()];
+  let periods=[];
+  try{const ics=JSON.parse(localStorage.getItem('st_ics')||'null');if(ics&&ics[DOW])periods=ics[DOW];}catch{}
+
+  const timerEl=document.getElementById('mh-count-timer');
+  const labelEl=document.getElementById('mh-count-label');
+  const subEl=document.getElementById('mh-count-sub');
+  const arcEl=document.getElementById('mh-arc-fill');
+  const nextEl=document.getElementById('mh-hero-next');
+  if(!timerEl)return;
+
+  // p.s = [h,m] start, p.e = [h,m] end, p.subj = subject name
+  const toMin=p=>{const s=p.s||[0,0];return s[0]*60+s[1];};
+  const toEnd=p=>{const e=p.e||[0,0];return e[0]*60+e[1];};
+  const cur=periods.find(p=>nm>=toMin(p)&&nm<toEnd(p));
+  const nxt=periods.find(p=>toMin(p)>nm);
+
+  if(cur){
+    const totalMin=toEnd(cur)-toMin(cur);
+    const remSec=(toEnd(cur)-nm)*60;
+    const remMin=Math.floor(remSec/60);
+    const remSecR=Math.floor(remSec%60);
+    timerEl.textContent=`${String(remMin).padStart(2,'0')}:${String(remSecR).padStart(2,'0')}`;
+    if(labelEl)labelEl.textContent='until end of period';
+    if(subEl)subEl.textContent=cur.subj||'Current period';
+    const pct=remSec/(totalMin*60);
+    if(arcEl)arcEl.style.strokeDashoffset=(628*(1-pct)).toFixed(1);
+    if(nextEl)nextEl.textContent=nxt?`Next: ${nxt.subj||'—'}  ${String(nxt.s[0]).padStart(2,'0')}:${String(nxt.s[1]).padStart(2,'0')}`:'';
+  }else if(nxt){
+    const diffSec=(toMin(nxt)-nm)*60;
+    const diffMin=Math.floor(diffSec/60);
+    const diffSecR=Math.floor(diffSec%60);
+    timerEl.textContent=`${String(diffMin).padStart(2,'0')}:${String(diffSecR).padStart(2,'0')}`;
+    if(labelEl)labelEl.textContent='until next period';
+    if(subEl)subEl.textContent=nxt.subj||'—';
+    const pct=Math.min(1,diffSec/3600);
+    if(arcEl)arcEl.style.strokeDashoffset=(628*(1-pct)).toFixed(1);
+    if(nextEl)nextEl.textContent='';
+  }else{
+    const isWeekend=now.getDay()===0||now.getDay()===6;
+    timerEl.textContent='——';
+    if(labelEl)labelEl.textContent=isWeekend?'weekend':'no more classes';
+    if(subEl)subEl.textContent=isWeekend?'enjoy your break':'see you tomorrow';
+    if(arcEl)arcEl.style.strokeDashoffset='628';
+    if(nextEl)nextEl.textContent='';
+  }
+}
+
+
+function mhRenderCal(){
+  const grid=document.getElementById('mh-cal-grid');
+  const lbl=document.getElementById('mh-cal-month');
+  if(!grid)return;
+  lbl.textContent=new Date(_mhY,_mhM,1).toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+  const days=['Mo','Tu','We','Th','Fr','Sa','Su'];
+  let h=days.map(d=>`<div class="mh-dh">${d}</div>`).join('');
+  let dow=new Date(_mhY,_mhM,1).getDay();dow=dow===0?6:dow-1;
+  const dim=new Date(_mhY,_mhM+1,0).getDate();
+  const dip=new Date(_mhY,_mhM,0).getDate();
+  const tod=new Date().toISOString().split('T')[0];
+  const evDates=new Set((evs||[]).map(e=>e.date));
+  const hwDates=new Set((hw||[]).filter(x=>!x.done&&x.due).map(x=>x.due));
+  for(let i=dow-1;i>=0;i--)h+=`<div class="mh-cd other">${dip-i}</div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=`${_mhY}-${String(_mhM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cls=['mh-cd',ds===tod?'today':'',_mhSel===ds&&ds!==tod?'sel':'',evDates.has(ds)||hwDates.has(ds)?'dot':''].filter(Boolean).join(' ');
+    h+=`<div class="${cls}" onclick="mhSelDay('${ds}')">${d}</div>`;
+  }
+  const rem=(7-(dow+dim)%7)%7;
+  for(let d=1;d<=rem;d++)h+=`<div class="mh-cd other">${d}</div>`;
+  grid.innerHTML=h;
+  // Day strip
+  const strip=document.getElementById('mh-day-strip');
+  const sel=_mhSel||tod;
+  const dayEvs=(evs||[]).filter(e=>e.date===sel);
+  const dayHW=(hw||[]).filter(x=>x.due===sel&&!x.done);
+  if(strip){
+    if(dayEvs.length||dayHW.length){
+      strip.style.display='block';
+      const d=new Date(sel+'T00:00');
+      document.getElementById('mh-day-lbl').textContent=d.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'short'}).toUpperCase();
+      document.getElementById('mh-day-evs').innerHTML=[
+        ...dayEvs.map(e=>`<div class="mh-day-ev"><div class="mh-day-dot"></div>${esc(e.name)}${e.time?`<span style="color:var(--t3);font-family:'Geist Mono',monospace;font-size:10px">${e.time}</span>`:''}</div>`),
+        ...dayHW.map(x=>`<div class="mh-day-ev"><div class="mh-day-dot" style="background:#9333ea"></div>📚 ${esc(x.task)}</div>`)
+      ].join('');
+    }else{strip.style.display='none';}
+  }
+}
+
+function mhCal(dir){
+  _mhM+=dir;
+  if(_mhM>11){_mhM=0;_mhY++;}
+  if(_mhM<0){_mhM=11;_mhY--;}
+  mhRenderCal();
+}
+
+function mhSelDay(ds){
+  _mhSel=ds;
+  mhRenderCal();
+  // Pre-fill event date input with selected day
+  const ed=document.getElementById('mh-ed');
+  if(ed)ed.value=ds;
+}
+
+function mhRenderSched(){
+  const el=document.getElementById('mh-sched');if(!el)return;
+  const tod=new Date();
+  const nm=tod.getHours()*60+tod.getMinutes();
+  const DOW=['sun','mon','tue','wed','thu','fri','sat'][tod.getDay()];
+  let periods=[];
+  try{const ics=JSON.parse(localStorage.getItem('st_ics')||'null');if(ics&&ics[DOW])periods=ics[DOW];}catch{}
+  if(!periods.length){el.innerHTML='<div class="mh-nil">No timetable for today</div>';return;}
+  el.innerHTML=periods.map(p=>{
+    const[sh,sm]=p.s||p.start||[0,0];
+    const[eh,em]=p.e||p.end||[0,0];
+    const sm2=sh*60+sm,em2=eh*60+em;
+    const isCur=nm>=sm2&&nm<em2;
+    const timeStr=`${String(sh).padStart(2,'0')}:${String(sm).padStart(2,'0')}`;
+    const sc=subjColour(p.subj||p.name);
+    const barStyle=sc?`background:${sc}`:'';
+    return`<div class="mh-srow${isCur?' mh-scur':''}">
+      <span class="mh-stime">${timeStr}</span>
+      <div class="mh-sbar${isCur?' cur':''}" style="${isCur&&sc?`background:${sc}`:barStyle}"></div>
+      <span class="mh-sname">${esc(p.subj||p.name||'—')}</span>
+      ${p.room?`<span class="mh-sroom">${esc(p.room)}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function mhRenderRems(){
+  const el=document.getElementById('mh-rems');if(!el)return;
+  const all=rems||[];
+  const active=all.filter(r=>!r.done);
+  const done=all.filter(r=>r.done).length;
+  const total=all.length;
+  // Update completion ring
+  const arc=document.getElementById('mh-ring-rem-arc');
+  const txt=document.getElementById('mh-ring-rem-txt');
+  if(arc&&total>0){
+    const pct=done/total;
+    const circ=113;
+    arc.style.strokeDashoffset=circ*(1-pct);
+    if(txt)txt.textContent=done+'/'+total;
+  }else if(arc){
+    arc.style.strokeDashoffset=113;
+    if(txt)txt.textContent='0';
+  }
+  const list=active.slice(0,8);
+  if(!list.length){el.innerHTML='<div class="mh-nil">All done ✓</div>';return;}
+  el.innerHTML=list.map(r=>`
+    <div class="mh-rrow${r.done?' done':''}">
+      <div class="mh-rcheck" onclick="mhTogR(${r.id})">${r.done?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':''}</div>
+      <span class="mh-rtxt">${esc(r.text)}</span>
+      ${r.pri==='high'?'<span class="mh-rpri h">high</span>':r.pri==='low'?'<span class="mh-rpri l">low</span>':''}
+    </div>`).join('');
+}
+
+function mhRenderHW(){
+  const el=document.getElementById('mh-hw');if(!el)return;
+  const list=(hw||[]).filter(h=>!h.done).slice(0,8);
+  if(!list.length){el.innerHTML='<div class="mh-nil">No homework</div>';return;}
+  const tod=new Date().toISOString().split('T')[0];
+  el.innerHTML=list.map(h=>{
+    const sc=subjColour(h.subj);
+    const od=h.due&&h.due<tod;
+    const daysLeft=h.due?Math.ceil((new Date(h.due+'T00:00')-new Date().setHours(0,0,0,0))/86400000):null;
+    const dueStr=daysLeft===null?'':(daysLeft===0?'due today':daysLeft===1?'due tomorrow':`due in ${daysLeft}d`);
+    return`<div class="mh-hrow${h.done?' done':''}" style="${sc?`border-left-color:${sc}`:'border-left-color:rgba(147,51,234,.4)'}">
+      <div class="mh-hcheck" onclick="mhTogH(${h.id})">${h.done?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>':''}</div>
+      <div style="flex:1;min-width:0">
+        <div class="mh-htxt">${esc(h.task)}</div>
+        <div class="mh-hmeta">
+          ${h.subj?`<span style="${sc?`color:${sc}`:''}">⬤ ${h.subj}</span> · `:''}
+          <span class="${od?'mh-overdue':''}">${dueStr}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function mhRenderExams(){
+  const el=document.getElementById('mh-exams');if(!el)return;
+  const tod=new Date().toISOString().split('T')[0];
+  const list=(exams||[]).filter(x=>x.date>=tod).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+  if(!list.length){el.innerHTML='<div class="mh-nil">No upcoming exams</div>';return;}
+  // Max days for ring scale = 30
+  const MAXD=30;
+  el.innerHTML=list.map(x=>{
+    const days=Math.ceil((new Date(x.date+'T00:00')-new Date().setHours(0,0,0,0))/86400000);
+    const pct=Math.max(0,Math.min(1,(MAXD-days)/MAXD));
+    const circ=2*Math.PI*22; // r=22
+    const offset=circ*(1-pct);
+    const col=days===0?'#dc2626':days<=3?'#ea580c':days<=7?'#ca8a04':'#16a34a';
+    const dayStr=days===0?'TODAY':days===1?'TMRW':days+'d';
+    return`<div class="mh-xrow">
+      <svg class="mh-xring" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(0,0,0,.06)" stroke-width="5"/>
+        <circle cx="26" cy="26" r="22" fill="none" stroke="${col}" stroke-width="5"
+          stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 26 26)"/>
+        <text x="26" y="24" text-anchor="middle" font-size="10" font-weight="800"
+          fill="${col}" font-family="'Geist Mono',monospace">${dayStr}</text>
+        <text x="26" y="35" text-anchor="middle" font-size="8"
+          fill="var(--t3)" font-family="'Geist Mono',monospace">days</text>
+      </svg>
+      <div class="mh-xinfo">
+        <div class="mh-xname">${esc(x.subj||x.name||'Exam')}</div>
+        <div class="mh-xdate">${x.date}${x.room?' · '+x.room:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function mhRenderTodayEvs(){
+  // Now merged into calendar tile day strip — no separate render needed
+}
+
+function mhTogR(id){
+  togRem(id);
+  mhRenderRems();
+  // Tick animation
+  setTimeout(()=>{
+    const checks=document.querySelectorAll('.mh-rcheck');
+    checks.forEach(c=>{c.classList.add('ticked');setTimeout(()=>c.classList.remove('ticked'),300);});
+  },10);
+}
+function mhTogH(id){
+  togHW(id);
+  mhRenderHW();
+  setTimeout(()=>{
+    const checks=document.querySelectorAll('.mh-hcheck');
+    checks.forEach(c=>{c.classList.add('ticked');setTimeout(()=>c.classList.remove('ticked'),300);});
+  },10);
+}
+
+/* ── QUICK-ADD FAB ───────────────────────────────────── */
+function mhFabTap(){
+  // If on hero panel, go to tiles
+  if(_mhPage===0){mhGoTo(1);return;}
+  // On tiles panel, toggle quick-add sheet
+  const fab=document.getElementById('mh-quick-fab');
+  const isOpen=document.getElementById('mh-bg').classList.contains('on');
+  if(isOpen){
+    mhClose();
+    if(fab)fab.classList.remove('open');
+  }else{
+    mhOpen('rem');
+    if(fab)fab.classList.add('open');
+  }
+}
+// Reset FAB rotate when sheet closes
+const _origMhClose=window.mhClose;
+
+/* ── DRAG-TO-REORDER TILES ───────────────────────────── */
+function mhDragSetup(){
+  const container=document.querySelector('.mh-tiles');
+  if(!container||container._dragSetup)return;
+  container._dragSetup=true;
+  let dragEl=null,holdTimer=null,startY=0,startIdx=0;
+
+  function getTiles(){return [...container.querySelectorAll('.mh-tile')];}
+  function getIdx(el){return getTiles().indexOf(el);}
+
+  container.addEventListener('touchstart',e=>{
+    const tile=e.target.closest('.mh-tile');
+    if(!tile)return;
+    // Don't trigger on interactive elements
+    if(e.target.closest('button,.mh-rcheck,.mh-hcheck,.mh-tile-action,.mh-cal-nbtn'))return;
+    startY=e.touches[0].clientY;
+    holdTimer=setTimeout(()=>{
+      dragEl=tile;
+      startIdx=getIdx(tile);
+      tile.classList.add('dragging','drag-ready');
+      navigator.vibrate&&navigator.vibrate(10);
+    },400);
+  },{passive:true});
+
+  container.addEventListener('touchmove',e=>{
+    if(!dragEl){
+      // Cancel hold if moved too much
+      if(Math.abs(e.touches[0].clientY-startY)>8){clearTimeout(holdTimer);holdTimer=null;}
+      return;
+    }
+    e.preventDefault();
+    const y=e.touches[0].clientY;
+    const tiles=getTiles();
+    // Find which tile we're hovering over
+    let target=null;
+    tiles.forEach(t=>{
+      if(t===dragEl)return;
+      const r=t.getBoundingClientRect();
+      if(y>r.top&&y<r.bottom){target=t;}
+    });
+    tiles.forEach(t=>t.classList.remove('drag-over'));
+    if(target)target.classList.add('drag-over');
+  },{passive:false});
+
+  container.addEventListener('touchend',e=>{
+    clearTimeout(holdTimer);holdTimer=null;
+    if(!dragEl){return;}
+    const y=e.changedTouches[0].clientY;
+    const tiles=getTiles();
+    let target=null;
+    tiles.forEach(t=>{
+      if(t===dragEl)return;
+      const r=t.getBoundingClientRect();
+      if(y>r.top&&y<r.bottom){target=t;}
+    });
+    tiles.forEach(t=>t.classList.remove('drag-over','dragging','drag-ready'));
+    if(target){
+      const targetIdx=getIdx(target);
+      if(targetIdx>startIdx){
+        container.insertBefore(dragEl,target.nextSibling);
+      }else{
+        container.insertBefore(dragEl,target);
+      }
+    }else{
+      dragEl.classList.remove('dragging','drag-ready');
+    }
+    dragEl=null;
+  });
+}
+
+
+function mhOpen(tab){
+  _mhTab=tab||'rem';
+  mhTab(_mhTab);
+  document.getElementById('mh-bg').classList.add('on');
+  document.getElementById('mh-sheet').classList.add('on');
+  setTimeout(()=>{
+    const p=document.getElementById('mh-p-'+_mhTab);
+    const i=p&&p.querySelector('input[type="text"],input:not([type])');
+    if(i)i.focus();
+  },340);
+}
+function mhClose(){
+  document.getElementById('mh-bg').classList.remove('on');
+  document.getElementById('mh-sheet').classList.remove('on');
+  const fab=document.getElementById('mh-quick-fab');
+  if(fab)fab.classList.remove('open');
+}
+function mhTab(t){
+  _mhTab=t;
+  document.querySelectorAll('.mh-stab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.mh-spane').forEach(p=>p.classList.remove('on'));
+  const tb=document.getElementById('mh-tab-'+t);if(tb)tb.classList.add('on');
+  const pn=document.getElementById('mh-p-'+t);if(pn)pn.classList.add('on');
+}
+
+function mhSaveRem(){
+  const text=document.getElementById('mh-ri').value.trim();if(!text)return;
+  rems.unshift({id:Date.now(),text,pri:document.getElementById('mh-rp').value,subj:document.getElementById('mh-rs').value,done:false,ld:null});
+  sv('st_r5',rems);document.getElementById('mh-ri').value='';
+  mhClose();mhRenderRems();renderRems();showToast('Reminder added ✓');
+}
+function mhSaveHW(){
+  const task=document.getElementById('mh-hi2').value.trim();if(!task)return;
+  const subj=document.getElementById('mh-hs').value;
+  const due=document.getElementById('mh-hd').value;
+  const id=Date.now();
+  hw.unshift({id,task,subj,due,link:'',done:false});sv('st_hw',hw);
+  if(due){evs.push({id:id+1,name:`📚 ${task}`,date:due,time:'',note:subj,subj,hwId:id});evs.sort((a,b)=>a.date.localeCompare(b.date));sv('st_e5',evs);}
+  document.getElementById('mh-hi2').value='';
+  mhClose();mhRenderHW();renderHW();mhRenderCal();showToast('Homework added ✓');
+}
+function mhSaveEv(){
+  const name=document.getElementById('mh-en').value.trim();
+  const date=document.getElementById('mh-ed').value;
+  if(!name||!date)return;
+  evs.push({id:Date.now(),name,date,time:document.getElementById('mh-et').value,note:''});
+  evs.sort((a,b)=>a.date.localeCompare(b.date));sv('st_e5',evs);
+  document.getElementById('mh-en').value='';
+  mhClose();mhRenderCal();mhRenderTodayEvs();showToast('Event added ✓');
+}
+function mhSaveEx(){
+  const name=document.getElementById('mh-xn').value.trim();
+  const date=document.getElementById('mh-xd').value;
+  if(!name||!date)return;
+  exams.push({id:Date.now(),subj:name,date,room:document.getElementById('mh-xt').value});
+  exams.sort((a,b)=>a.date.localeCompare(b.date));sv('st_x5',exams);
+  document.getElementById('mh-xn').value='';
+  mhClose();mhRenderExams();showToast('Exam added ✓');
+}
+
+window.addEventListener('resize',()=>{if(window.innerWidth<=640)mhInit();});
+
 
 // Keep mobile nav in sync when goTo is called from keyboard/other sources
 const _origGoTo=goTo;
@@ -4624,13 +5868,19 @@ function syncMobileNav(){
     if(nightMode)applyNight(true,false);
     if(savedICS){try{applyICS(JSON.parse(savedICS));}catch{}}
     else{populateSubjectDropdowns();}
-    document.getElementById('pg-dash').classList.add('act');
+    // On mobile, activate pg-mobile; on desktop, activate pg-dash
+    if(window.innerWidth<=640){
+      document.getElementById('pg-mobile').classList.add('act');
+    }else{
+      document.getElementById('pg-dash').classList.add('act');
+    }
     tick();renderDash();renderTT();setupScroll();
     // Init custom dropdowns after all selects are in DOM
     cddInit();
     updateNotifBtn();
     applyFancyCursor(fancyCursor);
     if(notifEnabled&&Notification.permission==='granted')scheduleNotifications();
+    mhInit();
     sbGetSession().then(sess=>{
       if(sess?.access_token){
         sbAuthToken=sess.access_token;
