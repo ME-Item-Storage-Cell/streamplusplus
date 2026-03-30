@@ -279,20 +279,24 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
     padding:0;
     position:absolute;inset:0;
     overflow:hidden;
+    overscroll-behavior:none;
+    touch-action:pan-x;
   }
   /* On mobile, hide pg-dash completely — pg-mobile replaces it */
   #pg-dash{display:none!important}
   /* Prevent any other .pg from overlaying pg-mobile */
   body:has(#pg-mobile.act) .pg:not(#pg-mobile){display:none!important}
   body:has(#pg-mobile.act) #page-stack{overflow:hidden!important}
+  /* Kill body bounce when mobile home is active */
+  body:has(#pg-mobile.act){overflow:hidden;overscroll-behavior:none;position:fixed;width:100%;height:100%}
 
-  /* ── TWO-PANEL PAGER ─────────────────────────────────── */
   #mh-pager{
     display:flex;
     width:200%;
     height:100%;
     transition:transform .42s cubic-bezier(.4,0,.2,1);
     will-change:transform;
+    overscroll-behavior:none;
   }
   #mh-pager.on-tiles{transform:translateX(-50%)}
 
@@ -305,7 +309,11 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
     align-items:center;justify-content:space-between;
     padding:calc(env(safe-area-inset-top,0px) + 56px) 28px calc(env(safe-area-inset-bottom,0px) + 36px);
     overflow:hidden;
-    /* Dark gradient background — looks great over the app's ambient gradient */
+    /* Lock it — no scroll, no bounce */
+    touch-action:none;
+    overscroll-behavior:none;
+    -webkit-overflow-scrolling:auto;
+    /* Dark gradient background */
     background:linear-gradient(160deg,
       rgba(20,20,40,.92) 0%,
       rgba(10,10,28,.96) 60%,
@@ -5448,6 +5456,11 @@ function mhGoTo(page){
 }
 
 function mhPagerSetup(){
+  // Block all vertical scroll/bounce on the hero panel
+  const hero=document.getElementById('mh-panel-hero');
+  if(hero){
+    hero.addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
+  }
   // Double-tap anywhere on mobile page opens quick-add
   let _lastTap=0;
   document.getElementById('pg-mobile')?.addEventListener('touchend',e=>{
