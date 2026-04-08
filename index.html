@@ -828,6 +828,9 @@ body.night .qa-pill:hover{background:rgba(34,36,48,.96)}
 body.night #pp-trend{opacity:.9}
 
 /* ── NOTIFICATION BELL ──────────────────────────────── */
+#settings-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,.5);cursor:none;display:none;align-items:center;justify-content:center;color:var(--t3);transition:all .15s,transform .4s;flex-shrink:0;position:relative}
+#settings-btn:hover{background:rgba(255,255,255,.88);color:var(--text);transform:rotate(60deg)}
+#pill.open #settings-btn{display:flex}
 #notif-btn{
   width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
   background:rgba(255,255,255,.5);cursor:none;display:none;align-items:center;
@@ -837,9 +840,8 @@ body.night #pp-trend{opacity:.9}
 #notif-btn.on{color:#e53e3e}
 #notif-badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#e53e3e;border:1.5px solid var(--bg);display:none}
 #notif-btn.pending #notif-badge{display:block}
-#pill.open #notif-btn{display:flex}
-body.night #notif-btn,body.night #syncbtn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1)}
-body.night #notif-btn:hover,body.night #syncbtn:hover{background:rgba(255,255,255,.16)}
+body.night #notif-btn,body.night #syncbtn,body.night #settings-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1)}
+body.night #notif-btn:hover,body.night #syncbtn:hover,body.night #settings-btn:hover{background:rgba(255,255,255,.16);color:var(--text)}
 
 /* Global transition for smooth night mode switch */
 body *{transition-property:background,background-color,border-color,color,box-shadow;transition-duration:.4s;transition-timing-function:ease}
@@ -1273,8 +1275,9 @@ select.inp{display:none!important}
 /* Floating stopwatch widget — top-center, clear of the clock */
 #sw-float{
   position:fixed;
-  top:18px;left:50%;
-  right:auto;
+  top:18px;
+  left:50%!important;
+  right:auto!important;
   z-index:249;
   background:rgba(248,248,252,0.82);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -1649,6 +1652,56 @@ body.night .fr-setup-banner{background:linear-gradient(135deg,rgba(99,102,241,.1
 .fr-setup-h{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
 .fr-setup-p{font-size:11px;color:var(--t3)}
 
+/* ══ SETTINGS OVERLAY ══════════════════════════════════════ */
+#settings-overlay{position:fixed;inset:0;z-index:8500;display:none;align-items:flex-start;justify-content:flex-start;padding:10px 0 10px 80px;background:rgba(0,0,0,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#settings-overlay.open{display:flex}
+#settings-panel{width:min(400px,calc(100vw - 90px));max-height:calc(100vh - 20px);overflow-y:auto;background:var(--bg);border:1px solid var(--border);border-radius:22px;box-shadow:0 32px 80px rgba(0,0,0,.2),0 2px 0 rgba(255,255,255,.9) inset;display:flex;flex-direction:column;animation:stSlideIn .32s cubic-bezier(.34,1.1,.64,1) both;scrollbar-width:none}
+#settings-panel::-webkit-scrollbar{display:none}
+body.night #settings-panel{background:#0e0f12;border-color:rgba(255,255,255,.1);box-shadow:0 32px 80px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.06) inset}
+@keyframes stSlideIn{from{opacity:0;transform:translateX(-20px) scale(.97)}to{opacity:1;transform:none}}
+
+/* Header */
+#settings-header{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 24px 0;flex-shrink:0}
+#settings-title{font-size:22px;font-weight:700;letter-spacing:-.04em;color:var(--text)}
+#settings-sub{font-size:11px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-top:4px}
+#settings-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--glass);cursor:none;font-size:13px;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}
+#settings-close:hover{background:rgba(229,62,62,.1);color:#e53e3e;border-color:rgba(229,62,62,.2)}
+
+/* Sections */
+.st-section{padding:20px 24px 4px}
+.st-section-label{font-size:10px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.14em;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.st-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.st-cards{display:flex;flex-direction:column;gap:8px}
+
+/* Cards */
+.st-card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--glass);border:1px solid var(--glass-bd);border-radius:14px;backdrop-filter:var(--blur-sm);-webkit-backdrop-filter:var(--blur-sm);transition:all .15s}
+body.night .st-card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+.st-card-wide{align-items:flex-start}
+.st-card-icon{font-size:22px;flex-shrink:0;width:36px;text-align:center;line-height:1}
+.st-card-body{flex:1;min-width:0}
+.st-card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.st-card-desc{font-size:11px;color:var(--t3);margin-top:2px;line-height:1.5}
+.st-name-row{display:flex;gap:8px;margin-top:10px}
+.st-toggle-card{cursor:none}
+.st-toggle-card:hover{background:rgba(255,255,255,.85);border-color:var(--borders)}
+body.night .st-toggle-card:hover{background:rgba(255,255,255,.1)}
+
+/* Toggle switch */
+.st-toggle{width:40px;height:22px;border-radius:11px;background:rgba(0,0,0,.12);border:1.5px solid rgba(0,0,0,.1);flex-shrink:0;position:relative;transition:background .22s,border-color .22s}
+body.night .st-toggle{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.1)}
+.st-toggle.on{background:var(--accent,#6366f1);border-color:transparent}
+.st-toggle-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .22s cubic-bezier(.34,1.4,.64,1)}
+.st-toggle.on .st-toggle-knob{transform:translateX(18px)}
+
+/* Colour swatches */
+.st-colors{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.st-col-swatch{width:28px;height:28px;border-radius:50%;cursor:none;transition:transform .15s,box-shadow .15s;border:2px solid transparent}
+.st-col-swatch:hover{transform:scale(1.18)}
+.st-col-swatch.act{box-shadow:0 0 0 2.5px var(--bg),0 0 0 4.5px currentColor;transform:scale(1.1)}
+
+/* Accent colour CSS vars (injected via JS) */
+:root{--accent:#6366f1}
+
 /* ── Weekly toggle ── */
 .fr-time-toggle{display:flex;gap:2px;background:rgba(0,0,0,.05);border-radius:8px;padding:2px;margin-bottom:12px}
 body.night .fr-time-toggle{background:rgba(255,255,255,.06)}
@@ -1744,14 +1797,14 @@ body.night .fr-det-paper{background:rgba(255,255,255,.04)}
 .fr-det-remove{flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(229,62,62,.25);background:rgba(229,62,62,.06);color:#e53e3e;font-size:13px;cursor:none;transition:all .15s}
 .fr-det-remove:hover{background:rgba(229,62,62,.12);border-color:rgba(229,62,62,.4)}
 
-/* Emoji picker */
-.fr-emoji-picker{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--glass-bd);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:16px;padding:10px;box-shadow:var(--sh-lg);z-index:10;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;width:220px;animation:detSlideUp .25s cubic-bezier(.34,1.26,.64,1) both}
-body.night .fr-emoji-picker{background:rgba(20,22,30,.92);border-color:rgba(255,255,255,.12)}
-.fr-emoji-opt{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:none;transition:all .12s;border:1.5px solid transparent}
-.fr-emoji-opt:hover{background:rgba(0,0,0,.07);border-color:var(--border);transform:scale(1.15)}
+/* Emoji picker — rendered in body at fixed position */
+#fr-emoji-picker{position:fixed;z-index:19000;background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 24px 64px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.12);display:grid;grid-template-columns:repeat(6,1fr);gap:4px;width:224px;animation:detSlideUp .22s cubic-bezier(.34,1.26,.64,1) both}
+body.night #fr-emoji-picker{background:#16181f;border-color:rgba(255,255,255,.12)}
+.fr-emoji-opt{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:none;transition:transform .1s,background .1s;border:1.5px solid transparent}
+.fr-emoji-opt:hover{background:rgba(0,0,0,.07);transform:scale(1.2)}
 body.night .fr-emoji-opt:hover{background:rgba(255,255,255,.1)}
-.fr-emoji-opt.selected{background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.35)}
-.fr-emoji-hint{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);text-align:center;margin-top:8px;letter-spacing:.04em}
+.fr-emoji-opt.selected{background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.4)}
+.fr-emoji-hint{font-size:10px;font-family:'Geist Mono',monospace;color:var(--t3);text-align:center;margin-top:8px;letter-spacing:.04em;grid-column:1/-1}
 
 /* Divider line inside detail card */
 .fr-det-divider{height:1px;background:var(--border);margin:0 28px 20px}
@@ -2533,9 +2586,12 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
     <button id="pinbtn" onclick="togglePin()" title="Pin sidebar">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
     </button>
-    <button id="notif-btn" onclick="toggleNotifications()" title="Notifications">
+    <button id="notif-btn" onclick="toggleNotifications()" title="Notifications" style="display:none">
       <div id="notif-badge"></div>
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+    </button>
+    <button id="settings-btn" onclick="openSettings()" title="Settings">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
     </button>
   </div>
 </nav>
@@ -3170,6 +3226,164 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
   </div>
 </div>
 
+<!-- ══ SETTINGS OVERLAY ══════════════════════════════════ -->
+<div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div id="settings-panel">
+    <div id="settings-header">
+      <div id="settings-title-row">
+        <div id="settings-title">Settings</div>
+        <div id="settings-sub">personalise stream.</div>
+      </div>
+      <button id="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+
+    <!-- Profile section -->
+    <div class="st-section">
+      <div class="st-section-label">Profile</div>
+      <div class="st-cards">
+        <div class="st-card st-card-wide">
+          <div class="st-card-icon">👤</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Your name</div>
+            <div class="st-card-desc">Shown on your dashboard greeting</div>
+            <div class="st-name-row">
+              <input class="inp" id="st-name-inp" placeholder="First name" maxlength="32" style="flex:1">
+              <button class="btn bd" onclick="stSaveName()">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="st-card st-card-wide">
+          <div class="st-card-icon">📅</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Timetable</div>
+            <div class="st-card-desc">Import a new .ics file to update your schedule</div>
+            <button class="btn bo" onclick="closeSettings();showTTImport()" style="margin-top:10px;width:100%">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="13" height="13"><path stroke-linecap="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              Import .ics file
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="st-section">
+      <div class="st-section-label">Appearance</div>
+      <div class="st-cards">
+        <div class="st-card st-toggle-card" id="st-night-card" onclick="stToggleNight()">
+          <div class="st-card-icon" id="st-night-icon">🌙</div>
+          <div class="st-card-body">
+            <div class="st-card-title" id="st-night-title">Night Mode</div>
+            <div class="st-card-desc">Dark theme for late-night study</div>
+          </div>
+          <div class="st-toggle" id="st-night-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+        <div class="st-card st-toggle-card" id="st-cursor-card" onclick="stToggleCursor()">
+          <div class="st-card-icon">✨</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Fancy Cursor</div>
+            <div class="st-card-desc">Custom cursor + comet trail effect</div>
+          </div>
+          <div class="st-toggle" id="st-cursor-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+        <div class="st-card st-color-card">
+          <div class="st-card-icon">🎨</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Accent Colour</div>
+            <div class="st-card-desc">Tint colour used throughout the app</div>
+            <div class="st-colors" id="st-colors">
+              <div class="st-col-swatch act" data-col="default" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" onclick="stSetAccent('default',this)" title="Default"></div>
+              <div class="st-col-swatch" data-col="rose" style="background:linear-gradient(135deg,#f43f5e,#ec4899)" onclick="stSetAccent('rose',this)" title="Rose"></div>
+              <div class="st-col-swatch" data-col="sky" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)" onclick="stSetAccent('sky',this)" title="Sky"></div>
+              <div class="st-col-swatch" data-col="emerald" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="stSetAccent('emerald',this)" title="Emerald"></div>
+              <div class="st-col-swatch" data-col="amber" style="background:linear-gradient(135deg,#f59e0b,#f97316)" onclick="stSetAccent('amber',this)" title="Amber"></div>
+              <div class="st-col-swatch" data-col="mono" style="background:linear-gradient(135deg,#374151,#111827)" onclick="stSetAccent('mono',this)" title="Mono"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance -->
+    <div class="st-section">
+      <div class="st-section-label">Performance</div>
+      <div class="st-cards">
+        <div class="st-card st-toggle-card" id="st-perf-card" onclick="stTogglePerf()">
+          <div class="st-card-icon">⚡</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Performance Mode</div>
+            <div class="st-card-desc">Disables particles, animations and blur effects for smoother performance on lower-end devices</div>
+          </div>
+          <div class="st-toggle" id="st-perf-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+        <div class="st-card st-toggle-card" id="st-particles-card" onclick="stToggleParticles()">
+          <div class="st-card-icon">🌟</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Particle Background</div>
+            <div class="st-card-desc">Animated particle system on the home screen</div>
+          </div>
+          <div class="st-toggle" id="st-particles-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+        <div class="st-card st-toggle-card" id="st-blur-card" onclick="stToggleBlur()">
+          <div class="st-card-icon">🔮</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Glass Blur</div>
+            <div class="st-card-desc">Frosted-glass backdrop-filter on cards and panels</div>
+          </div>
+          <div class="st-toggle" id="st-blur-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+        <div class="st-card st-toggle-card" id="st-transitions-card" onclick="stToggleTransitions()">
+          <div class="st-card-icon">💨</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Page Transitions</div>
+            <div class="st-card-desc">Animated slide-in when switching pages</div>
+          </div>
+          <div class="st-toggle" id="st-transitions-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="st-section">
+      <div class="st-section-label">Notifications</div>
+      <div class="st-cards">
+        <div class="st-card st-toggle-card" id="st-notif-card" onclick="stToggleNotif()">
+          <div class="st-card-icon">🔔</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Push Notifications</div>
+            <div class="st-card-desc">Get reminded about upcoming homework and exams</div>
+          </div>
+          <div class="st-toggle" id="st-notif-toggle"><div class="st-toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data -->
+    <div class="st-section" style="padding-bottom:24px">
+      <div class="st-section-label">Data</div>
+      <div class="st-cards">
+        <div class="st-card st-card-wide">
+          <div class="st-card-icon">☁️</div>
+          <div class="st-card-body">
+            <div class="st-card-title">Cloud Sync</div>
+            <div class="st-card-desc">Sync your data across devices with a free account</div>
+            <button class="btn bo" onclick="closeSettings();toggleSyncBadge()" style="margin-top:10px">Open sync panel →</button>
+          </div>
+        </div>
+        <div class="st-card st-card-wide" style="border-color:rgba(229,62,62,.2)">
+          <div class="st-card-icon">🗑️</div>
+          <div class="st-card-body">
+            <div class="st-card-title" style="color:#e53e3e">Reset all data</div>
+            <div class="st-card-desc">Permanently delete all your stream. data from this device</div>
+            <button class="btn" onclick="stResetData()" style="margin-top:10px;background:rgba(229,62,62,.08);color:#e53e3e;border:1.5px solid rgba(229,62,62,.2)">Reset data…</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- Mobile fixed overlays — outside page-stack so position:fixed works on iOS -->
 <div id="mh-sync-pill" onclick="toggleSyncBadge()">
   <div id="mh-sync-dot"></div>
@@ -3379,6 +3593,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
   }
 
   function draw(){
+    if(cv.style.display==='none'){requestAnimationFrame(draw);return;}
     // Decay scroll velocity each frame
     scrollVel*=0.88;
 
@@ -5214,6 +5429,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(document.getElementById('focus-fs').classList.contains('open')){ftEnd();return;}
     if(document.getElementById('sw-fs').classList.contains('open')){swCloseFs();return;}
+    if(document.getElementById('settings-overlay')?.classList.contains('open')){closeSettings();return;}
     if(document.getElementById('fr-detail')?.classList.contains('open')){frCloseDetail();return;}
     if(document.getElementById('fr-add-modal')?.classList.contains('open')){frCloseAdd();return;}
     closeQM();closeRM();closeSC();closeResetModal();closeICSModal();closeHWModal();closeTTEdit();closeSearch();return;
@@ -5639,14 +5855,19 @@ function frShowDetail(uid){
   const myEmoji=e.me?localStorage.getItem('st_lb_emoji'):'';
   const avContent=myEmoji||initials;
   const avFontSize=myEmoji?'32px':'22px';
-  avEl.style.cssText=`background:hsl(${hue},55%,50%);box-shadow:0 0 0 3px hsl(${hue},55%,75%),0 8px 24px hsl(${hue},55%,50%,0.3);font-size:${avFontSize}`;
-  avEl.textContent=avContent;
-  // Emoji picker only shown for "me"
+  avEl.style.cssText=`background:hsl(${hue},55%,50%);box-shadow:0 0 0 3px hsl(${hue},55%,72%),0 8px 24px rgba(0,0,0,.18);font-size:${avFontSize};position:relative`;
   if(e.me){
-    avEl.title='Click to change avatar';
+    avEl.innerHTML=`${avContent}<div style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--bg);pointer-events:none">✏️</div>`;
+    avEl.title='Change avatar';
     avEl.onclick=()=>frToggleEmojiPicker(avEl,hue);
+    // Add "tap to change" label below
+    let hint=document.getElementById('fr-det-av-hint');
+    if(!hint){hint=document.createElement('div');hint.id='fr-det-av-hint';hint.style.cssText='font-size:10px;font-family:\'Geist Mono\',monospace;color:var(--t3);margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase';avEl.parentNode.insertBefore(hint,avEl.nextSibling);}
+    hint.textContent='tap to change';
   }else{
+    avEl.textContent=avContent;
     avEl.title='';avEl.onclick=null;
+    const hint=document.getElementById('fr-det-av-hint');if(hint)hint.remove();
   }
 
   // Rank badge
@@ -5753,13 +5974,21 @@ function frToggleEmojiPicker(anchorEl,hue){
   if(_emojiPickerEl){frCloseEmojiPicker();return;}
   const cur=localStorage.getItem('st_lb_emoji')||'';
   const picker=document.createElement('div');
-  picker.className='fr-emoji-picker';
+  picker.id='fr-emoji-picker';
   picker.innerHTML=FR_EMOJIS.map(em=>`<div class="fr-emoji-opt${em===cur?' selected':''}" onclick="frPickEmoji('${em}',${hue})" title="${em}">${em}</div>`).join('')
-    +`<div class="fr-emoji-hint" style="grid-column:1/-1">tap to set avatar</div>`;
-  anchorEl.style.position='relative';
-  anchorEl.appendChild(picker);
+    +`<div class="fr-emoji-hint">tap to set avatar</div>`;
+  // Position below/centered on anchor using fixed coords
+  document.body.appendChild(picker);
+  const rect=anchorEl.getBoundingClientRect();
+  const pw=224;
+  let left=rect.left+rect.width/2-pw/2;
+  let top=rect.bottom+10;
+  // Keep on screen
+  left=Math.max(8,Math.min(left,window.innerWidth-pw-8));
+  if(top+260>window.innerHeight)top=rect.top-270;
+  picker.style.left=left+'px';
+  picker.style.top=top+'px';
   _emojiPickerEl=picker;
-  // Close on outside click
   setTimeout(()=>document.addEventListener('click',_emojiOutside),50);
 }
 
@@ -6373,6 +6602,183 @@ function applyFancyCursor(on){
   if(item)item.classList.toggle('active-cursor',on);
 }
 function ctxToggleCursor(){closeCtx();applyFancyCursor(!fancyCursor);}
+
+/* ════ SETTINGS ════════════════════════════════════════════ */
+
+// Performance mode
+let perfMode=localStorage.getItem('st_perf')==='1';
+let particlesEnabled=localStorage.getItem('st_particles')!=='0';
+let blurEnabled=localStorage.getItem('st_blur')!=='0';
+let transitionsEnabled=localStorage.getItem('st_transitions')!=='0';
+
+// Accent colour map
+const ACCENT_MAP={
+  default:'#6366f1',rose:'#f43f5e',sky:'#0ea5e9',
+  emerald:'#10b981',amber:'#f59e0b',mono:'#374151'
+};
+let currentAccent=localStorage.getItem('st_accent')||'default';
+
+function applyPerfMode(on,silent){
+  perfMode=on;
+  if(!silent)localStorage.setItem('st_perf',on?'1':'0');
+  let s=document.getElementById('perf-style');
+  if(!s){s=document.createElement('style');s.id='perf-style';document.head.appendChild(s);}
+  if(on){
+    s.textContent=`
+      *{transition:none!important;animation:none!important}
+      #particles{display:none!important}
+      body::before{display:none!important}
+      .fr-pod,#fr-det-card{animation:none!important}
+      .fr-row{animation:none!important}
+      .fr-feed-item{animation:none!important}
+      .fr-subj-row{animation:none!important}
+      @keyframes podIn{from{}to{}}
+      @keyframes rowIn{from{}to{}}
+    `;
+    // Turn off particles
+    applyParticles(false,true);
+  }else{
+    s.textContent='';
+    applyParticles(particlesEnabled,true);
+  }
+}
+
+function applyParticles(on,silent){
+  particlesEnabled=on;
+  if(!silent)localStorage.setItem('st_particles',on?'1':'0');
+  const c=document.getElementById('particles');
+  if(c)c.style.display=on&&!perfMode?'':'none';
+}
+
+function applyBlur(on,silent){
+  blurEnabled=on;
+  if(!silent)localStorage.setItem('st_blur',on?'1':'0');
+  let s=document.getElementById('blur-style');
+  if(!s){s=document.createElement('style');s.id='blur-style';document.head.appendChild(s);}
+  s.textContent=on?'':`.glass,.fr-lb-card,#pill,#settings-panel,#fr-det-card,#fr-add-box,.fr-profile-pill,.st-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}`;
+}
+
+function applyTransitions(on,silent){
+  transitionsEnabled=on;
+  if(!silent)localStorage.setItem('st_transitions',on?'1':'0');
+  let s=document.getElementById('trans-style');
+  if(!s){s=document.createElement('style');s.id='trans-style';document.head.appendChild(s);}
+  s.textContent=on?'':`.pg{animation:none!important}.pg.leaving{animation:none!important;display:none!important}`;
+}
+
+function applyAccent(key,silent){
+  currentAccent=key;
+  if(!silent)localStorage.setItem('st_accent',key);
+  const col=ACCENT_MAP[key]||ACCENT_MAP.default;
+  document.documentElement.style.setProperty('--accent',col);
+  // Update the .st-toggle.on colour
+  let s=document.getElementById('accent-style');
+  if(!s){s=document.createElement('style');s.id='accent-style';document.head.appendChild(s);}
+  s.textContent=`.st-toggle.on{background:${col}!important}`;
+}
+
+function openSettings(){
+  const ov=document.getElementById('settings-overlay');
+  if(!ov)return;
+  ov.classList.add('open');
+  // Populate name input
+  const ni=document.getElementById('st-name-inp');
+  if(ni)ni.value=localStorage.getItem('st_name')||'';
+  // Sync toggles
+  stSyncToggles();
+}
+
+function closeSettings(){
+  document.getElementById('settings-overlay')?.classList.remove('open');
+}
+
+function stSyncToggles(){
+  stSetToggle('st-night-toggle',nightMode);
+  stSetToggle('st-cursor-toggle',fancyCursor);
+  stSetToggle('st-perf-toggle',perfMode);
+  stSetToggle('st-particles-toggle',particlesEnabled&&!perfMode);
+  stSetToggle('st-blur-toggle',blurEnabled&&!perfMode);
+  stSetToggle('st-transitions-toggle',transitionsEnabled&&!perfMode);
+  stSetToggle('st-notif-toggle',notifEnabled);
+  // Active swatch
+  document.querySelectorAll('.st-col-swatch').forEach(s=>s.classList.toggle('act',s.dataset.col===currentAccent));
+}
+
+function stSetToggle(id,on){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('on',on);
+}
+
+function stToggleNight(){toggleNight();stSyncToggles();}
+function stToggleCursor(){applyFancyCursor(!fancyCursor);stSyncToggles();}
+
+function stTogglePerf(){
+  applyPerfMode(!perfMode);
+  // Cascade: disable sub-toggles when perf on
+  if(perfMode){
+    applyParticles(false,true);applyBlur(false,true);applyTransitions(false,true);
+  }else{
+    applyParticles(true);applyBlur(true);applyTransitions(true);
+  }
+  stSyncToggles();
+  showToast(perfMode?'Performance mode on ⚡':'Performance mode off');
+}
+
+function stToggleParticles(){
+  if(perfMode)return;
+  applyParticles(!particlesEnabled);
+  stSyncToggles();
+}
+
+function stToggleBlur(){
+  if(perfMode)return;
+  applyBlur(!blurEnabled);
+  stSyncToggles();
+}
+
+function stToggleTransitions(){
+  if(perfMode)return;
+  applyTransitions(!transitionsEnabled);
+  stSyncToggles();
+}
+
+function stToggleNotif(){toggleNotifications();stSyncToggles();}
+
+function stSaveName(){
+  const inp=document.getElementById('st-name-inp');
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name){showToast('Enter a name first');return;}
+  localStorage.setItem('st_name',name);
+  sbSet('st_name',name);
+  applyName(name);
+  showToast('Name saved ✓');
+}
+
+function stSetAccent(key,el){
+  applyAccent(key);
+  document.querySelectorAll('.st-col-swatch').forEach(s=>s.classList.remove('act'));
+  if(el)el.classList.add('act');
+}
+
+function stResetData(){
+  if(!confirm('This will permanently delete ALL your stream. data (homework, papers, logs, exams, reminders). This cannot be undone.\n\nAre you sure?'))return;
+  const keys=['st_r5','st_e5','st_l5','st_p5','st_x5','st_hw','st_name','st_ics','st_friends','st_lb_username','st_lb_emoji','st_lb_streak','st_lb_weekly','st_setup_done','st_night','st_fancy_cursor','st_perf','st_particles','st_blur','st_transitions','st_accent','st_notif'];
+  keys.forEach(k=>localStorage.removeItem(k));
+  showToast('Data reset. Reloading…');
+  setTimeout(()=>location.reload(),1200);
+}
+
+// Apply stored settings on page load
+(function initSettings(){
+  applyAccent(currentAccent,true);
+  if(perfMode)applyPerfMode(true,true);
+  else{
+    if(!particlesEnabled)applyParticles(false,true);
+    if(!blurEnabled)applyBlur(false,true);
+    if(!transitionsEnabled)applyTransitions(false,true);
+  }
+})();
 
 /* ICS import modal (accessible from timetable empty state) */
 let _pendingICS=null;
