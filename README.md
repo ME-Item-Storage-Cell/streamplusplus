@@ -4,7 +4,7 @@
 **stream++** is a productivity platform built for students at **Baulkham Hills High School**; one place for your timetable, homework, calendar, study sessions, and past papers. All with live friend tracking.
 
 **Dashboard**
-**stream++** offers everything you need, the moment you open it. Your current period with a live countdown, today's homework, upcoming reminders, and your next exams; all at a glance.
+**stream++.** offers everything you need, the moment you open it. Your current period with a live countdown, today's homework, upcoming reminders, and your next exams; all at a glance.
 
 **Timetable**
 Import your schedule from Sentral and **stream++** tracks your periods in real time. A live countdown sits front and centre on the home screen, so you always know what class you're in, what's next, and how long you've got.
@@ -23,5 +23,6 @@ Add classmates through their **stream++** username and compete on a study leader
 
 Free. No ads. Works offline. Setup takes **under a minute**. Boost productivity **forever**. 
 
-# This project is not mine, and was most likely vibe coded. I dont endorse the use of AI. This branch merely exist to unlock 120% of claude codes potential
+Make the jump [now](https://me-item-storage-cell.github.io/streamplusplus/) ! 
 
+# This project is not mine, and was most likely vibe coded. I dont endorse the use of AI. This branch merely exist to *unlock 120% of claude codes potential*
