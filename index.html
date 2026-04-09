@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>stream.</title>
+<title>stream++</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f2f3f6" id="theme-color-meta">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="stream.">
+<meta name="apple-mobile-web-app-title" content="stream++">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
 <!-- Open Graph / Discord embed -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="stream.">
+<meta property="og:title" content="stream++">
 <meta property="og:description" content="your school productivity app">
 <meta property="og:url" content="https://dvnie1x.github.io/stream/">
 <meta property="og:image" content="https://dvnie1x.github.io/stream/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="stream.">
+<meta name="twitter:title" content="stream++">
 <meta name="twitter:description" content="your school productivity app">
 <meta name="twitter:image" content="https://dvnie1x.github.io/stream/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -41,6 +41,10 @@
 html{height:100%}
 body{height:100%;font-family:'Geist',sans-serif;font-size:14px;background:var(--bg);color:var(--text);cursor:none;overflow:hidden;
   transition:background .5s ease,color .5s ease;}
+/* Brand styling for the '++' suffix used across the site */
+.plusplus{font-family:'Geist Mono',monospace;font-weight:700;font-size:0.78em;letter-spacing:0;opacity:0.98;
+  color:var(--accent,#6366f1); /* use the user-configurable accent colour */
+  display:inline-block;transform:translateY(-0.12em);margin-left:0;padding-left:0}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;transition:background 0.6s ease;background:
   radial-gradient(ellipse 70% 55% at 10% 15%,rgba(185,210,255,0.45) 0%,transparent 65%),
   radial-gradient(ellipse 55% 65% at 90% 82%,rgba(215,195,255,0.35) 0%,transparent 65%),
@@ -1079,18 +1083,21 @@ body.night #ctx-night-item.active-night svg{stroke:#0f0f0f;opacity:.9}
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.9);
   box-shadow:var(--sh-lg);
-  border-radius:999px;
+  /* keep a consistent squircle rounding to avoid visual jitter */
+  border-radius:26px;
   display:flex;flex-direction:column;align-items:center;
   padding:10px 0 14px;gap:2px;
   z-index:310;
-  transition:width .34s cubic-bezier(.4,0,.2,1),border-radius .34s,background .2s,left .46s cubic-bezier(.34,1.2,.64,1),top .46s cubic-bezier(.34,1.2,.64,1);
+  /* don't animate border-radius (keep it constant); only animate width/background/position */
+  transition:width .34s cubic-bezier(.4,0,.2,1),background .2s,left .46s cubic-bezier(.34,1.2,.64,1),top .46s cubic-bezier(.34,1.2,.64,1);
   will-change:width,left,top;user-select:none;
 }
-#pill.open{width:216px;border-radius:26px;background:rgba(248,248,252,0.82)}
+#pill.open{width:216px;background:rgba(248,248,252,0.82)}
 #pill-grip{width:100%;display:flex;justify-content:center;padding:4px 0 6px;cursor:grab;opacity:.28;transition:opacity .15s;flex-shrink:0}
 #pill-grip:hover{opacity:.65}#pill-grip:active{cursor:grabbing;opacity:1}
 #pill-grip svg{width:16px;height:9px;display:block}
-#pill.open #pill-grip{padding-left:12px;justify-content:flex-start}
+/* Keep the grip centered even when the pill opens so the six-dot handle doesn't shift */
+/* Removed shifting padding-left/justify-content on open to prevent dot movement */
 
 .pill-logo{width:calc(100% - 20px);overflow:hidden;white-space:nowrap;font-size:0;font-weight:700;letter-spacing:-.045em;color:var(--text);max-height:0;opacity:0;transition:max-height .3s,opacity .25s,font-size .25s,padding .3s,margin .3s;padding:0 12px;border-bottom:1px solid transparent;margin-bottom:0}
 #pill.open .pill-logo{font-size:23px;max-height:56px;opacity:1;padding:2px 14px 13px;border-bottom:1px solid rgba(0,0,0,.07);margin-bottom:4px}
@@ -2215,7 +2222,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
 
 <!-- CONTEXT MENU -->
 <div id="ctx">
-  <div class="ctx-label">stream.</div>
+  <div class="ctx-label">stream<span class="plusplus">++</span></div>
   <div class="ctx-item" onclick="ctxGoTo('dash')">
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     Dashboard
@@ -2354,7 +2361,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
 <div id="onboard">
   <!-- Left: hero copy -->
   <div id="ob-left">
-    <div class="ob-brand">stream.</div>
+    <div class="ob-brand">stream<span class="plusplus">++</span></div>
     <div class="ob-hero-copy">
       <div class="ob-hero-h">Your school,<br><em>organised.</em></div>
       <div class="ob-hero-sub">One place for your timetable, homework, calendar, and study sessions. Built for students who want to stay ahead.</div>
@@ -2567,7 +2574,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
   <div id="pill-grip" title="Drag to move">
     <svg viewBox="0 0 16 9" fill="currentColor"><circle cx="2" cy="1.5" r="1.5"/><circle cx="8" cy="1.5" r="1.5"/><circle cx="14" cy="1.5" r="1.5"/><circle cx="2" cy="7.5" r="1.5"/><circle cx="8" cy="7.5" r="1.5"/><circle cx="14" cy="7.5" r="1.5"/></svg>
   </div>
-  <div class="pill-logo">stream.</div>
+  <div class="pill-logo">stream<span class="plusplus">++</span></div>
   <div class="ni act" data-page="dash" onclick="goTo('dash',this)" title="Dashboard">
 <!-- friends nav item added below study -->    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     <span class="ni-lbl">Dashboard</span>
@@ -2618,7 +2625,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
   <!-- Two-panel horizontal slider -->
   <div id="mh-pager">
 
-    <!-- PANEL 1: Hero — stream. logo + period countdown -->
+  <!-- PANEL 1: Hero — stream++ logo + period countdown -->
     <div id="mh-panel-hero">
       <!-- Background gradient orbs (animate subtly) -->
       <div class="mh-orb mh-orb-1"></div>
@@ -2627,7 +2634,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
 
       <!-- Logo -->
       <div class="mh-logo-wrap">
-        <div class="mh-wordmark">stream<span class="mh-dot-logo">.</span></div>
+  <div class="mh-wordmark">stream<span class="plusplus">++</span></div>
         <div class="mh-tagline" id="mh-greet-hero"></div>
       </div>
 
@@ -2670,7 +2677,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
 
         <!-- Header -->
         <div class="mh-tiles-header">
-          <span class="mh-tiles-title">stream<span style="opacity:.5">.</span></span>
+          <span class="mh-tiles-title">stream<span class="plusplus">++</span></span>
           <button onclick="mhShowICSImport()" style="font-size:11px;font-family:'Geist Mono',monospace;color:var(--t3);background:rgba(0,0,0,.05);border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent">📅 Import timetable</button>
         </div>
 
@@ -3244,7 +3251,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
     <div id="settings-header">
       <div id="settings-title-row">
         <div id="settings-title">Settings</div>
-        <div id="settings-sub">personalise stream.</div>
+  <div id="settings-sub">personalise stream<span class="plusplus">++</span></div>
       </div>
       <button id="settings-close" onclick="closeSettings()">✕</button>
     </div>
@@ -3386,7 +3393,7 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
           <div class="st-card-icon">🗑️</div>
           <div class="st-card-body">
             <div class="st-card-title" style="color:#e53e3e">Reset all data</div>
-            <div class="st-card-desc">Permanently delete all your stream. data from this device</div>
+            <div class="st-card-desc">Permanently delete all your stream++ data from this device</div>
             <button class="btn" onclick="stResetData()" style="margin-top:10px;background:rgba(229,62,62,.08);color:#e53e3e;border:1.5px solid rgba(229,62,62,.2)">Reset data…</button>
           </div>
         </div>
@@ -3530,8 +3537,8 @@ body.night .sb-close{background:rgba(255,255,255,.1)}
     <!-- Decorative orbs -->
     <div class="sb-orb sb-orb-1"></div>
     <div class="sb-orb sb-orb-2"></div>
-    <!-- Logo -->
-    <div class="sb-logo">stream<span class="sb-logo-dot">.</span></div>
+  <!-- Logo -->
+  <div class="sb-logo">stream<span class="plusplus">++</span></div>
     <div class="sb-tagline">sync across devices</div>
     <!-- Mode toggle -->
     <div class="sb-tabs">
@@ -6525,18 +6532,50 @@ let ctxOpen=false;
 function openCtx(x,y){
   // Update pin label to reflect current state
   document.getElementById('ctx-pin-lbl').textContent=pinned?'Unpin Sidebar':'Pin Sidebar';
-  // Position — flip if too close to edge
-  const W=window.innerWidth,H=window.innerHeight;
-  const mw=220,mh=320;
-  const px=x+mw>W?x-mw:x;
-  const py=y+mh>H?y-mh:y;
-  ctxMenu.style.left=Math.max(8,px)+'px';
-  ctxMenu.style.top=Math.max(8,py)+'px';
+  // Position — apply the 'open' layout then measure in the next frame so the browser
+  // has applied final styles (avoids first-click overflow at the bottom).
+  const W = window.innerWidth, H = window.innerHeight;
+  // Temporarily ensure menu uses the 'open' layout but keep it hidden while measuring
+  const prevVis = ctxMenu.style.visibility;
+  const prevPointer = ctxMenu.style.pointerEvents;
   ctxMenu.classList.add('open');
+  ctxMenu.style.visibility = 'hidden';
+  ctxMenu.style.pointerEvents = 'none';
+  // Reset to origin so measurement is consistent
+  ctxMenu.style.left = '0px'; ctxMenu.style.top = '0px';
+  // Wait one frame for layout to settle (ensures transform/scale/paint applied)
+  requestAnimationFrame(()=>{
+    const rect = ctxMenu.getBoundingClientRect();
+    let mw = Math.max(rect.width || 220, 220);
+    let mh = Math.max(rect.height || 120, 120);
+    // Safety margin to avoid tiny overflow due to subpixel/layout timing
+    const M = 12; // px
+    // If the menu is taller than available viewport space, make it scrollable instead
+    if (mh > H - 2 * M) {
+      ctxMenu.style.maxHeight = (H - 2 * M) + 'px';
+      ctxMenu.style.overflow = 'auto';
+      mh = H - 2 * M;
+    }
+    // Preferred position: top-left at (x,y), but clamp to keep margin M
+    let px = x;
+    let py = y;
+    if (px + mw + M > W) px = W - mw - M;
+    if (py + mh + M > H) py = H - mh - M;
+    px = Math.max(M, px);
+    py = Math.max(M, py);
+    ctxMenu.style.left = px + 'px';
+    ctxMenu.style.top = py + 'px';
+    // Restore visibility so the menu transition animates in place
+    ctxMenu.style.visibility = prevVis || '';
+    ctxMenu.style.pointerEvents = prevPointer || '';
+  });
   ctxOpen=true;
 }
 function closeCtx(){
   ctxMenu.classList.remove('open');
+  // clear any temporary inline sizing we may have applied
+  ctxMenu.style.maxHeight = '';
+  ctxMenu.style.overflow = '';
   ctxOpen=false;
 }
 
@@ -6774,7 +6813,7 @@ function stSetAccent(key,el){
 }
 
 function stResetData(){
-  if(!confirm('This will permanently delete ALL your stream. data (homework, papers, logs, exams, reminders). This cannot be undone.\n\nAre you sure?'))return;
+  if(!confirm('This will permanently delete ALL your stream++ data (homework, papers, logs, exams, reminders). This cannot be undone.\n\nAre you sure?'))return;
   const keys=['st_r5','st_e5','st_l5','st_p5','st_x5','st_hw','st_name','st_ics','st_friends','st_lb_username','st_lb_emoji','st_lb_streak','st_lb_weekly','st_setup_done','st_night','st_fancy_cursor','st_perf','st_particles','st_blur','st_transitions','st_accent','st_notif'];
   keys.forEach(k=>localStorage.removeItem(k));
   showToast('Data reset. Reloading…');
@@ -7443,7 +7482,7 @@ function scheduleNotifications(){
     else if(e.date===tomorrow)urgent.push(`📝 ${e.name} (${e.subj}) exam is tomorrow`);
   });
   if(urgent.length){
-    new Notification('stream. reminder',{body:urgent.join('\n'),icon:''});
+  new Notification('stream++ reminder',{body:urgent.join('\n'),icon:''});
     const btn=document.getElementById('notif-btn');if(btn)btn.classList.add('pending');
   }
 }
@@ -7541,7 +7580,7 @@ function exportData(){
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=`stream-export-${new Date().toISOString().split('T')[0]}.csv`;
+  a.download=`stream++-export-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
   showToast('Exported ✓');
 }

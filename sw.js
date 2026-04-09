@@ -1,6 +1,6 @@
-// stream. service worker
+// stream++ service worker
 // Bump CACHE_VERSION when you deploy updates to force a refresh
-const CACHE_VERSION = 'stream-v1';
+const CACHE_VERSION = 'stream++-v1';
 const CACHE_NAME = CACHE_VERSION;
 
 // Files to cache on install (app shell)

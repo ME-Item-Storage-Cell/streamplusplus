@@ -1,6 +1,6 @@
 {
-  "name": "stream.",
-  "short_name": "stream.",
+  "name": "stream++",
+  "short_name": "stream++",
   "description": "Your personal school productivity app",
   "start_url": "./",
   "display": "standalone",
