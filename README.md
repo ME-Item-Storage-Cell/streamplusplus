@@ -25,4 +25,4 @@ Free. No ads. Works offline. Setup takes **under a minute**. Boost productivity 
 
 Make the jump [now](https://me-item-storage-cell.github.io/streamplusplus/) ! 
 
-# This project is not mine, and was most likely vibe coded. I dont endorse the use of AI. This branch merely exist to unlock 120% of claude codes potential
+# This project is not mine, and was most likely vibe coded. I dont endorse the use of AI. This branch merely exist to *unlock 120% of claude codes potential*
