@@ -79,15 +79,25 @@ function resizeTrail(){trailCanvas.width=window.innerWidth;trailCanvas.height=wi
 resizeTrail();window.addEventListener('resize',resizeTrail);
 
 let mx=-200,my=-200;
+let nextMx=-200,nextMy=-200; // buffered mousemove position
 
 // Cursor morph state: 0=circle, >0=down arrow, <0=up arrow (range -1..1)
 let cursorMorph=0;       // current displayed value, lerped
 let cursorMorphTarget=0; // driven by scroll velocity
 let dotScale=1;          // for click squish
+let cursorSize=parseFloat(localStorage.getItem('st_cursor_size')||'1.0'); // dot size multiplier
 
 const TRAIL_LEN=36;
 const trailPts=Array(TRAIL_LEN).fill(null).map(()=>({x:-400,y:-400,age:0}));
 let trailHead=0;
+
+// Cache frequently accessed elements to avoid repeated DOM queries
+const focusFS=document.getElementById('focus-fs');
+const swFS=document.getElementById('sw-fs');
+let cachedFsOpen=false;
+let cachedIsNight=false;
+let cachedTrailRGB='15,15,15';
+let cachedCursorColor='rgba(15,15,15,1)';
 
 // Shared scroll velocity (read by both particles and cursor)
 let globalScrollVel=0;
@@ -101,12 +111,11 @@ if(pageStackEl){
   },{passive:true});
 }
 
+// Throttle mousemove: buffer position but don't render until animation frame
 document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cdot.style.left=mx+'px';cdot.style.top=my+'px';
-  trailPts[trailHead]={x:mx,y:my,age:1};
-  trailHead=(trailHead+1)%TRAIL_LEN;
-});
+  nextMx=e.clientX;
+  nextMy=e.clientY;
+},{passive:true});
 
 document.addEventListener('click',e=>{
   if(perfMode)return;
@@ -128,6 +137,18 @@ function drawCursor(t,scale){
   dCtx.clearRect(0,0,S,S);
   const cx=S/2,cy=S/2;
   const absT=Math.abs(t);
+  
+  // Skip if too small
+  if(absT<0.008 && scale===1){
+    dCtx.translate(cx,cy);
+    dCtx.beginPath();
+    dCtx.arc(0,0,4,0,Math.PI*2);
+    dCtx.fillStyle=cachedCursorColor;
+    dCtx.fill();
+    dCtx.translate(-cx,-cy);
+    return;
+  }
+
   const dir=t>=0?1:-1; // 1=down, -1=up
   dCtx.save();
   dCtx.translate(cx,cy);
@@ -186,14 +207,31 @@ function drawCursor(t,scale){
     dCtx.closePath();
   }
 
-  const fsOpen=document.getElementById('focus-fs')?.classList.contains('open')||document.getElementById('sw-fs')?.classList.contains('open');
-  const cursorColor=fsOpen?'rgba(255,255,255,0.85)':document.body.classList.contains('night')?'rgba(240,240,255,1)':'rgba(15,15,15,1)';
-  dCtx.fillStyle=cursorColor;
+  dCtx.fillStyle=cachedCursorColor;
   dCtx.fill();
   dCtx.restore();
 }
 
 (function anim(){
+  // Update cached values for colors only when they change
+  const needsColorUpdate=cachedIsNight!==document.body.classList.contains('night')||
+    cachedFsOpen!==(focusFS?.classList.contains('open')||swFS?.classList.contains('open'));
+  
+  if(needsColorUpdate){
+    cachedIsNight=document.body.classList.contains('night');
+    cachedFsOpen=focusFS?.classList.contains('open')||swFS?.classList.contains('open');
+    cachedCursorColor=cachedFsOpen?'rgba(255,255,255,0.85)':cachedIsNight?'rgba(240,240,255,1)':'rgba(15,15,15,1)';
+    cachedTrailRGB=cachedFsOpen?'255,255,255':cachedIsNight?'245,245,255':'15,15,15';
+  }
+
+  // Apply buffered mousemove position and add trail point in animation frame
+  if(nextMx!==mx||nextMy!==my){
+    mx=nextMx;my=nextMy;
+    cdot.style.transform=`translate3d(${mx-12}px,${my-12}px,0)`;
+    trailPts[trailHead]={x:mx,y:my,age:1};
+    trailHead=(trailHead+1)%TRAIL_LEN;
+  }
+
   // Drive morph target from scroll velocity, clamped -1..1
   const vel=globalScrollVel;
   globalScrollVel*=0.55; // fast decay — clears within ~4 frames after scroll stops
@@ -210,7 +248,7 @@ function drawCursor(t,scale){
   drawCursor(cursorMorph,dispScale);
 
   // Age trail points
-  for(let i=0;i<TRAIL_LEN;i++){trailPts[i].age*=0.78;}
+  for(let i=0;i<TRAIL_LEN;i++){trailPts[i].age*=0.85;}
 
   tCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
 
@@ -223,33 +261,35 @@ function drawCursor(t,scale){
     ordered.push(p);
   }
 
-  if(ordered.length>=2){
+  if(ordered.length>=2&&showTrail){
     // Measure speed at head (px moved between newest two points)
     const dx=ordered[0].x-ordered[1].x;
     const dy=ordered[0].y-ordered[1].y;
     const speed=Math.hypot(dx,dy);
     // Width: thicker when moving fast, thinner when slow
     const maxW=Math.min(5.5,1.8+speed*0.18);
-    // Night mode: white trail; day: dark trail
-    const _fsOpen=document.getElementById('focus-fs')?.classList.contains('open')||document.getElementById('sw-fs')?.classList.contains('open');
-    const trailRGB=_fsOpen?'255,255,255':document.body.classList.contains('night')?'245,245,255':'15,15,15';
 
-    // Draw trail as a series of line segments with lineWidth tapering head→tail
-    for(let i=0;i<ordered.length-1;i++){
-      const a=ordered[i],b=ordered[i+1];
-      const progress=i/(ordered.length-1);
-      const alpha=ordered[0].age*(1-progress)*0.6;
-      const w=Math.max(0.3,maxW*(1-progress));
-
-      tCtx.beginPath();
-      tCtx.moveTo(a.x,a.y);
-      tCtx.lineTo(b.x,b.y);
-      tCtx.strokeStyle=`rgba(${trailRGB},${alpha})`;
-      tCtx.lineWidth=w;
-      tCtx.lineCap='round';
-      tCtx.lineJoin='round';
-      tCtx.stroke();
+    // Draw as single continuous path for smooth trail (no visible dots)
+    tCtx.lineCap='round';
+    tCtx.lineJoin='round';
+    
+    // Build the entire path first
+    tCtx.beginPath();
+    tCtx.moveTo(ordered[0].x,ordered[0].y);
+    for(let i=1;i<ordered.length;i++){
+      tCtx.lineTo(ordered[i].x,ordered[i].y);
     }
+    
+    // Draw with gradient opacity from head to tail
+    const headAlpha=Math.min(1,ordered[0].age)*0.85;
+    tCtx.strokeStyle=`rgba(${cachedTrailRGB},${headAlpha})`;
+    tCtx.lineWidth=maxW;
+    tCtx.stroke();
+    
+    // Optional second pass with thinner line for better definition
+    tCtx.strokeStyle=`rgba(${cachedTrailRGB},${headAlpha*0.5})`;
+    tCtx.lineWidth=maxW*0.6;
+    tCtx.stroke();
   }
 
   requestAnimationFrame(anim);
@@ -281,12 +321,16 @@ function setSBPush(on){
 
 function applySB(){
   if(pinned){
+    pill.classList.add('pinned');
     pill.classList.add('open');
     pbtn.classList.add('on');
+    grip.style.display='none';
     setSBPush(true);
   } else {
+    pill.classList.remove('pinned');
     if(!pillHov) pill.classList.remove('open');
     pbtn.classList.remove('on');
+    grip.style.display='flex';
     setSBPush(false);
   }
   updateSettingsOverlayPosition();
@@ -312,9 +356,10 @@ function togglePin(){
   showToast(pinned?'Sidebar pinned':'Sidebar unpinned');
 }
 
-// Drag — suppress position transition while dragging, restore after
+// Drag — suppress position transition while dragging, restore after (disabled when pinned)
 let dragging=false,dragOX=0,dragOY=0;
 grip.addEventListener('mousedown',e=>{
+  if(pinned)return; // Can't drag when pinned
   e.preventDefault();
   dragging=true;
   dragOX=e.clientX-pillX;
@@ -345,8 +390,12 @@ document.addEventListener('mousemove',e=>{
 function updateSettingsOverlayPosition(){
   const overlay=document.getElementById('settings-overlay');
   if(!overlay)return;
+  const isPinned=pill.classList.contains('pinned');
   const isPillOpen=pill.classList.contains('open');
-  if(isPillOpen){
+  if(isPinned){
+    // When pinned, sidebar is fixed on left at 222px width
+    overlay.style.paddingLeft='222px';
+  }else if(isPillOpen){
     // When pill is open (216px), add extra padding to avoid overlap
     overlay.style.paddingLeft='246px';
   }else{
@@ -3099,9 +3148,41 @@ function ctxToggleNight(){closeCtx();toggleNight();}
 
 /* Cursor toggle */
 let fancyCursor=localStorage.getItem('st_fancy_cursor')!=='0';
+let showTrail=localStorage.getItem('st_show_trail')!=='0';
+let trailEnabledBeforeCursorDisabled=showTrail; // remember trail state when cursor disabled
+
+function applyTrail(on){
+  if(!fancyCursor)return; // can't change trail if cursor is disabled
+  showTrail=on;
+  localStorage.setItem('st_show_trail',on?'1':'0');
+  const trail=document.getElementById('ctrail');
+  if(trail)trail.style.display=on?'':'none';
+}
+
 function applyFancyCursor(on){
   fancyCursor=on;
   localStorage.setItem('st_fancy_cursor',on?'1':'0');
+  
+  if(!on){
+    // Disabling cursor: also disable trail and remember its state
+    trailEnabledBeforeCursorDisabled=showTrail;
+    showTrail=false;
+    localStorage.setItem('st_show_trail','0');
+  } else {
+    // Re-enabling cursor: restore trail to its previous state
+    showTrail=trailEnabledBeforeCursorDisabled;
+    localStorage.setItem('st_show_trail',showTrail?'1':'0');
+  }
+  
+  // Update trail visibility and toggle state
+  const trail=document.getElementById('ctrail');
+  if(trail)trail.style.display=(showTrail && fancyCursor)?'':'none';
+  const trailCard=document.getElementById('st-trail-card');
+  if(trailCard){
+    trailCard.style.pointerEvents=on?'auto':'none';
+    trailCard.style.opacity=on?'1':'0.5';
+  }
+  
   // When off: restore system cursor everywhere; when on: hide it
   document.body.style.cursor=on?'none':'auto';
   // Also override the global cursor:none rule for all elements
@@ -3109,15 +3190,39 @@ function applyFancyCursor(on){
   if(!cursorStyle){cursorStyle=document.createElement('style');cursorStyle.id='cursor-override-style';document.head.appendChild(cursorStyle);}
   cursorStyle.textContent=on?'':' *{cursor:auto!important} a,button,[onclick]{cursor:pointer!important} input,textarea{cursor:text!important}';
   const cdot=document.getElementById('cdot');
-  const trail=document.getElementById('ctrail');
-  if(cdot)cdot.style.display=on?'':'none';
-  if(trail)trail.style.display=on?'':'none';
+  if(cdot){
+    cdot.style.display=on?'':'none';
+    if(on)stApplyCursorSize(); // Re-apply saved size when re-enabling
+  }
   const lbl=document.getElementById('ctx-cursor-lbl');
   const item=document.getElementById('ctx-cursor-item');
   if(lbl)lbl.textContent=on?'Default Cursor':'Fancy Cursor';
   if(item)item.classList.toggle('active-cursor',on);
 }
 function ctxToggleCursor(){closeCtx();applyFancyCursor(!fancyCursor);}
+
+function stCursorSizeUpdate(val){
+  if(!fancyCursor)return; // can't change size if cursor is disabled
+  cursorSize=parseFloat(val);
+  localStorage.setItem('st_cursor_size',cursorSize.toString());
+  // Update slider display
+  const valDisplay=document.getElementById('st-cursor-size-val');
+  if(valDisplay)valDisplay.textContent=(Math.round(cursorSize*100))+'%';
+  // Apply size to cursor canvas
+  const cdot=document.getElementById('cdot');
+  if(cdot){
+    cdot.style.width=(24*cursorSize)+'px';
+    cdot.style.height=(24*cursorSize)+'px';
+  }
+}
+
+function stApplyCursorSize(){
+  const cdot=document.getElementById('cdot');
+  if(cdot){
+    cdot.style.width=(24*cursorSize)+'px';
+    cdot.style.height=(24*cursorSize)+'px';
+  }
+}
 
 /* 12-Hour Time Format */
 let use12hTime=localStorage.getItem('st_12h_time')==='1';
@@ -3209,6 +3314,13 @@ function openSettings(){
   // Populate name input
   const ni=document.getElementById('st-name-inp');
   if(ni)ni.value=localStorage.getItem('st_name')||'';
+  // Sync cursor size slider
+  const sizeSlider=document.getElementById('st-cursor-size-slider');
+  if(sizeSlider){
+    sizeSlider.value=cursorSize.toString();
+    const valDisplay=document.getElementById('st-cursor-size-val');
+    if(valDisplay)valDisplay.textContent=(Math.round(cursorSize*100))+'%';
+  }
   // Sync toggles
   stSyncToggles();
 }
@@ -3220,12 +3332,24 @@ function closeSettings(){
 function stSyncToggles(){
   stSetToggle('st-night-toggle',nightMode);
   stSetToggle('st-cursor-toggle',fancyCursor);
+  stSetToggle('st-trail-toggle',showTrail);
   stSetToggle('st-12h-time-toggle',use12hTime);
   stSetToggle('st-perf-toggle',perfMode);
   stSetToggle('st-particles-toggle',particlesEnabled&&!perfMode);
   stSetToggle('st-blur-toggle',blurEnabled&&!perfMode);
   stSetToggle('st-transitions-toggle',transitionsEnabled&&!perfMode);
   stSetToggle('st-notif-toggle',notifEnabled);
+  // Disable trail and size controls if cursor is disabled
+  const trailCard=document.getElementById('st-trail-card');
+  if(trailCard){
+    trailCard.style.pointerEvents=fancyCursor?'auto':'none';
+    trailCard.style.opacity=fancyCursor?'1':'0.5';
+  }
+  const sizeCard=document.getElementById('st-cursor-size-card');
+  if(sizeCard){
+    sizeCard.style.pointerEvents=fancyCursor?'auto':'none';
+    sizeCard.style.opacity=fancyCursor?'1':'0.5';
+  }
   // Active swatch
   document.querySelectorAll('.st-col-swatch').forEach(s=>s.classList.toggle('act',s.dataset.col===currentAccent));
 }
@@ -3237,6 +3361,7 @@ function stSetToggle(id,on){
 
 function stToggleNight(){toggleNight();stSyncToggles();}
 function stToggleCursor(){applyFancyCursor(!fancyCursor);stSyncToggles();}
+function stToggleTrail(){applyTrail(!showTrail);stSyncToggles();}
 function stToggle12hTime(){apply12hTime(!use12hTime);stSyncToggles();}
 
 function stTogglePerf(){
@@ -4772,6 +4897,7 @@ function syncMobileNav(){
     cddInit();
     updateNotifBtn();
     applyFancyCursor(fancyCursor);
+    stApplyCursorSize(); // Apply saved cursor size
     if(notifEnabled&&Notification.permission==='granted')scheduleNotifications();
     mhInit();
     sbGetSession().then(sess=>{

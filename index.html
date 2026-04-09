@@ -1075,7 +1075,7 @@
       <div class="st-section-label">Profile</div>
       <div class="st-cards">
         <div class="st-card st-card-wide">
-          <div class="st-card-icon">👤</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Your name</div>
             <div class="st-card-desc">Shown on your dashboard greeting</div>
@@ -1086,7 +1086,7 @@
           </div>
         </div>
         <div class="st-card st-card-wide">
-          <div class="st-card-icon">📅</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Timetable</div>
             <div class="st-card-desc">Import a new .ics file to update your schedule</div>
@@ -1104,23 +1104,43 @@
       <div class="st-section-label">Appearance</div>
       <div class="st-cards">
         <div class="st-card st-toggle-card" id="st-night-card" onclick="stToggleNight()">
-          <div class="st-card-icon" id="st-night-icon">🌙</div>
+          <div class="st-card-icon" id="st-night-icon"></div>
           <div class="st-card-body">
             <div class="st-card-title" id="st-night-title">Night Mode</div>
             <div class="st-card-desc">Dark theme for late-night study</div>
           </div>
           <div class="st-toggle" id="st-night-toggle"><div class="st-toggle-knob"></div></div>
         </div>
-        <div class="st-card st-toggle-card" id="st-cursor-card" onclick="stToggleCursor()">
-          <div class="st-card-icon">✨</div>
-          <div class="st-card-body">
-            <div class="st-card-title">Fancy Cursor</div>
-            <div class="st-card-desc">Custom cursor + comet trail effect</div>
+        <div id="st-cursor-group" style="position:relative;border:1px solid var(--border);border-radius:18px;padding:12px;background:rgba(0,0,0,0.02)">
+          <div class="st-card st-toggle-card" id="st-cursor-card" onclick="stToggleCursor()">
+
+            <div class="st-card-body">
+              <div class="st-card-title">Fancy Cursor</div>
+              <div class="st-card-desc">Custom cursor icon with morph effect</div>
+            </div>
+            <div class="st-toggle" id="st-cursor-toggle"><div class="st-toggle-knob"></div></div>
           </div>
-          <div class="st-toggle" id="st-cursor-toggle"><div class="st-toggle-knob"></div></div>
+          <div class="st-card st-toggle-card" id="st-trail-card" onclick="stToggleTrail()" style="margin-top:8px;border-left:3px solid var(--accent)">
+
+            <div class="st-card-body">
+              <div class="st-card-title">Comet Trail</div>
+              <div class="st-card-desc">Show trail effect behind cursor</div>
+            </div>
+            <div class="st-toggle" id="st-trail-toggle"><div class="st-toggle-knob"></div></div>
+          </div>
+          <div class="st-card st-card-wide" id="st-cursor-size-card" style="margin-top:8px;border-left:3px solid var(--accent)">
+
+            <div class="st-card-body">
+              <div class="st-card-title">Cursor Size</div>
+              <div class="st-cursor-size-slider-wrap" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <input type="range" class="st-cursor-size-slider" id="st-cursor-size-slider" min="0.6" max="1.8" step="0.2" value="1.0" oninput="stCursorSizeUpdate(this.value)" style="flex:1;height:4px;border-radius:2px;background:rgba(0,0,0,0.15);outline:none;-webkit-appearance:none;appearance:none">
+                <div class="st-cursor-size-val" id="st-cursor-size-val" style="font-size:12px;font-family:'Geist Mono',monospace;color:var(--t3);min-width:30px;text-align:right">100%</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="st-card st-toggle-card" id="st-12h-time-card" onclick="stToggle12hTime()">
-          <div class="st-card-icon">🕐</div>
+
           <div class="st-card-body">
             <div class="st-card-title">12-Hour Time</div>
             <div class="st-card-desc">Display time in 12-hour format</div>
@@ -1128,7 +1148,7 @@
           <div class="st-toggle" id="st-12h-time-toggle"><div class="st-toggle-knob"></div></div>
         </div>
         <div class="st-card st-color-card">
-          <div class="st-card-icon">🎨</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Accent Colour</div>
             <div class="st-card-desc">Tint colour used throughout the app</div>
@@ -1150,7 +1170,7 @@
       <div class="st-section-label">Performance</div>
       <div class="st-cards">
         <div class="st-card st-toggle-card" id="st-perf-card" onclick="stTogglePerf()">
-          <div class="st-card-icon">⚡</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Performance Mode</div>
             <div class="st-card-desc">Disables particles, animations and blur effects for smoother performance on lower-end devices</div>
@@ -1158,7 +1178,7 @@
           <div class="st-toggle" id="st-perf-toggle"><div class="st-toggle-knob"></div></div>
         </div>
         <div class="st-card st-toggle-card" id="st-particles-card" onclick="stToggleParticles()">
-          <div class="st-card-icon">🌟</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Particle Background</div>
             <div class="st-card-desc">Animated particle system on the home screen</div>
@@ -1166,7 +1186,7 @@
           <div class="st-toggle" id="st-particles-toggle"><div class="st-toggle-knob"></div></div>
         </div>
         <div class="st-card st-toggle-card" id="st-blur-card" onclick="stToggleBlur()">
-          <div class="st-card-icon">🔮</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Glass Blur</div>
             <div class="st-card-desc">Frosted-glass backdrop-filter on cards and panels</div>
@@ -1174,7 +1194,7 @@
           <div class="st-toggle" id="st-blur-toggle"><div class="st-toggle-knob"></div></div>
         </div>
         <div class="st-card st-toggle-card" id="st-transitions-card" onclick="stToggleTransitions()">
-          <div class="st-card-icon">💨</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Page Transitions</div>
             <div class="st-card-desc">Animated slide-in when switching pages</div>
@@ -1189,7 +1209,7 @@
       <div class="st-section-label">Notifications</div>
       <div class="st-cards">
         <div class="st-card st-toggle-card" id="st-notif-card" onclick="stToggleNotif()">
-          <div class="st-card-icon">🔔</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Push Notifications</div>
             <div class="st-card-desc">Get reminded about upcoming homework and exams</div>
@@ -1204,7 +1224,7 @@
       <div class="st-section-label">Data</div>
       <div class="st-cards">
         <div class="st-card st-card-wide">
-          <div class="st-card-icon">☁️</div>
+
           <div class="st-card-body">
             <div class="st-card-title">Cloud Sync</div>
             <div class="st-card-desc">Sync your data across devices with a free account</div>
@@ -1212,7 +1232,7 @@
           </div>
         </div>
         <div class="st-card st-card-wide" style="border-color:rgba(229,62,62,.2)">
-          <div class="st-card-icon">🗑️</div>
+
           <div class="st-card-body">
             <div class="st-card-title" style="color:#e53e3e">Reset all data</div>
             <div class="st-card-desc">Permanently delete all your stream++ data from this device</div>
