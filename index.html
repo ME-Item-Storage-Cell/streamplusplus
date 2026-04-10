@@ -1159,6 +1159,9 @@
               <div class="st-col-swatch" data-col="emerald" style="background:linear-gradient(135deg,#10b981,#059669)" onclick="stSetAccent('emerald',this)" title="Emerald"></div>
               <div class="st-col-swatch" data-col="amber" style="background:linear-gradient(135deg,#f59e0b,#f97316)" onclick="stSetAccent('amber',this)" title="Amber"></div>
               <div class="st-col-swatch" data-col="mono" style="background:linear-gradient(135deg,#374151,#111827)" onclick="stSetAccent('mono',this)" title="Mono"></div>
+              <div class="st-col-swatch st-col-swatch-custom" data-col="custom" onclick="openColorPicker()" title="Custom">
+                <span style="font-size:18px;font-weight:700;color:var(--text)">+</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1410,6 +1413,36 @@
       <button class="sb-btn" id="sb-submit" onclick="sbSubmit()">Sign in</button>
     </div>
     <button class="sb-close" onclick="sbCloseModal()">✕</button>
+  </div>
+</div>
+
+<!-- Color Picker Modal -->
+<div id="color-picker-modal" class="color-picker-modal" onclick="if(event.target===this)closeColorPicker()">
+  <div class="color-picker-panel">
+    <div class="color-picker-header">
+      <div class="color-picker-title">Custom Accent Colour</div>
+      <button class="color-picker-close" onclick="closeColorPicker()">✕</button>
+    </div>
+    <div class="color-picker-body">
+      <div class="color-picker-preview-wrap">
+        <div class="color-picker-preview-group">
+          <label class="color-picker-label-small">Preview</label>
+          <div class="color-picker-preview" id="color-preview"></div>
+        </div>
+        <div class="color-picker-picker-group">
+          <label class="color-picker-label-small">Picker</label>
+          <input type="color" id="native-color-picker" class="native-color-picker" value="#6366f1">
+        </div>
+      </div>
+      <div class="color-picker-hex-wrap">
+        <label class="color-picker-label">Hex Code</label>
+        <input type="text" id="hex-input" class="color-picker-hex-input" placeholder="#6366f1" maxlength="7" oninput="syncColorFromHex()">
+      </div>
+    </div>
+    <div class="color-picker-footer">
+      <button class="color-picker-btn color-picker-btn-cancel" onclick="closeColorPicker()">Cancel</button>
+      <button class="color-picker-btn color-picker-btn-apply" onclick="applyCustomColor()">Apply</button>
+    </div>
   </div>
 </div>
 

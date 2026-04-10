@@ -338,21 +338,50 @@ function applySB(){
 function togglePin(){
   pinned=!pinned;
   localStorage.setItem('stpin4',pinned?'1':'0');
+  const defaultX=14;
+  const defaultY=window.innerHeight/2-120;
   if(pinned){
-    // Animate to default home position
-    const homeX=14;
-    const homeY=Math.round(window.innerHeight/2-120);
-    pill.style.left=homeX+'px';
-    pill.style.top=homeY+'px';
-    pill.style.transform='none';
-    // Update tracked position after animation settles
-    setTimeout(()=>{
-      pillX=homeX;pillY=homeY;
-      localStorage.setItem('stpx4',pillX);
-      localStorage.setItem('stpy4',pillY);
-    },480);
+    // Check if already near default position - skip position animation if within ±3px
+    const nearDefault = pillX >= defaultX-3 && pillX <= defaultX+3 && pillY >= defaultY-3 && pillY <= defaultY+3;
+    if(nearDefault){
+      // Already near default position, just expand immediately
+      pill.style.left='0px';
+      pill.style.top='0px';
+      pill.style.transform='none';
+      applySB();
+      // Update tracked position after expansion settles
+      setTimeout(()=>{
+        pillX=0;pillY=0;
+        localStorage.setItem('stpx4',pillX);
+        localStorage.setItem('stpy4',pillY);
+      },350);
+    }else{
+      // Stage 1: Rapidly animate position to (0,0) in 0.15s
+      pill.style.transition='left .15s cubic-bezier(.4,0,.2,1),top .15s cubic-bezier(.4,0,.2,1)';
+      pill.style.left='0px';
+      pill.style.top='0px';
+      pill.style.transform='none';
+      // Stage 2: After position animation, trigger expansion (0.35s)
+      setTimeout(()=>{
+        pill.style.transition='';
+        applySB();
+        // Update tracked position after total animation settles (0.15s + 0.35s = 0.5s)
+        setTimeout(()=>{
+          pillX=0;pillY=0;
+          localStorage.setItem('stpx4',pillX);
+          localStorage.setItem('stpy4',pillY);
+        },350);
+      },150);
+    }
+  }else{
+    // Unpin: first remove .pinned class to trigger contraction, then restore position
+    applySB();
+    // Clear any inline height style to prevent stuck height
+    pill.style.height='';
+    // Restore position with CSS transitions intact
+    pill.style.left=pillX+'px';
+    pill.style.top=pillY+'px';
   }
-  applySB();
   showToast(pinned?'Sidebar pinned':'Sidebar unpinned');
 }
 
@@ -366,9 +395,9 @@ grip.addEventListener('mousedown',e=>{
   dragOY=e.clientY-pillY;
   document.body.style.userSelect='none';
   // Strip left/top from transition so cursor tracks instantly
-  pill.style.transition='width .34s cubic-bezier(.4,0,.2,1),border-radius .34s,background .2s';
+  pill.style.transition='width .35s cubic-bezier(.4,0,.2,1),border-radius .35s,background .2s';
 });
-document.addEventListener('mousemove',e=>{if(!dragging)return;setPillPos(e.clientX-dragOX,e.clientY-dragOY);});
+document.addEventListener('mousemove',e=>{if(!dragging)return;setPillPos(e.clientX-dragOX,e.clientY-dragOY);updateSettingsOverlayPosition();});
 document.addEventListener('mouseup',()=>{
   if(dragging){
     dragging=false;
@@ -392,15 +421,19 @@ function updateSettingsOverlayPosition(){
   if(!overlay)return;
   const isPinned=pill.classList.contains('pinned');
   const isPillOpen=pill.classList.contains('open');
+  // When pinned, always use pinned padding regardless of actual position
   if(isPinned){
-    // When pinned, sidebar is fixed on left at 222px width
-    overlay.style.paddingLeft='222px';
+    // Sidebar is pinned at 0,0 with 222px width - padding = 0 + 222 + 30 = 252px
+    overlay.style.paddingLeft='252px';
+  }else if(pillX < -10 || pillX > 38){
+    // Sidebar moved from original position - stick to left wall with fixed padding
+    overlay.style.paddingLeft='24px';
   }else if(isPillOpen){
-    // When pill is open (216px), add extra padding to avoid overlap
+    // When pill is open (216px) at original position, add extra padding to avoid overlap
     overlay.style.paddingLeft='246px';
   }else{
-    // When pill is closed (56px), use default padding
-    overlay.style.paddingLeft='80px';
+    // When pill is closed (56px) at original position, use default padding
+    overlay.style.paddingLeft='86px';
   }
 }
 
@@ -3299,7 +3332,12 @@ function applyTransitions(on,silent){
 function applyAccent(key,silent){
   currentAccent=key;
   if(!silent)localStorage.setItem('st_accent',key);
-  const col=ACCENT_MAP[key]||ACCENT_MAP.default;
+  let col;
+  if(key==='custom'){
+    col=customAccentColor||'#6366f1';
+  }else{
+    col=ACCENT_MAP[key]||ACCENT_MAP.default;
+  }
   document.documentElement.style.setProperty('--accent',col);
   // Update the .st-toggle.on colour
   let s=document.getElementById('accent-style');
@@ -3310,7 +3348,13 @@ function applyAccent(key,silent){
 function openSettings(){
   const ov=document.getElementById('settings-overlay');
   if(!ov)return;
+  // Toggle: if already open, close it
+  if(ov.classList.contains('open')){
+    closeSettings();
+    return;
+  }
   ov.classList.add('open');
+  updateSettingsOverlayPosition();
   // Populate name input
   const ni=document.getElementById('st-name-inp');
   if(ni)ni.value=localStorage.getItem('st_name')||'';
@@ -3349,6 +3393,16 @@ function stSyncToggles(){
   if(sizeCard){
     sizeCard.style.pointerEvents=fancyCursor?'auto':'none';
     sizeCard.style.opacity=fancyCursor?'1':'0.5';
+  }
+  // Sync custom swatch
+  const customSwatch=document.querySelector('.st-col-swatch-custom');
+  if(customSwatch){
+    if(currentAccent==='custom'){
+      customSwatch.style.background=customAccentColor;
+      customSwatch.classList.add('act');
+    }else{
+      customSwatch.classList.remove('act');
+    }
   }
   // Active swatch
   document.querySelectorAll('.st-col-swatch').forEach(s=>s.classList.toggle('act',s.dataset.col===currentAccent));
@@ -3413,9 +3467,68 @@ function stSetAccent(key,el){
   if(el)el.classList.add('act');
 }
 
+// Custom color picker functions
+let customAccentColor=localStorage.getItem('st_accent_custom')||'#6366f1';
+
+function openColorPicker(){
+  const modal=document.getElementById('color-picker-modal');
+  const preview=document.getElementById('color-preview');
+  const nativePicker=document.getElementById('native-color-picker');
+  const hexInput=document.getElementById('hex-input');
+  
+  modal.classList.add('open');
+  preview.style.background=customAccentColor;
+  nativePicker.value=customAccentColor;
+  hexInput.value=customAccentColor;
+}
+
+function closeColorPicker(){
+  document.getElementById('color-picker-modal').classList.remove('open');
+}
+
+function syncColorFromHex(){
+  const hexInput=document.getElementById('hex-input');
+  const nativePicker=document.getElementById('native-color-picker');
+  const preview=document.getElementById('color-preview');
+  let hex=hexInput.value;
+  
+  // Add # if missing
+  if(hex&&!hex.startsWith('#'))hex='#'+hex;
+  
+  // Validate hex color
+  if(/^#[0-9A-Fa-f]{6}$/.test(hex)){
+    nativePicker.value=hex;
+    preview.style.background=hex;
+  }
+}
+
+function applyCustomColor(){
+  const nativePicker=document.getElementById('native-color-picker');
+  const color=nativePicker.value;
+  
+  customAccentColor=color;
+  localStorage.setItem('st_accent_custom',color);
+  applyAccent('custom');
+  closeColorPicker();
+  showToast('Custom accent colour applied');
+}
+
+// Sync native color picker with hex input when color picker changes
+document.addEventListener('DOMContentLoaded',()=>{
+  const nativePicker=document.getElementById('native-color-picker');
+  if(nativePicker){
+    nativePicker.addEventListener('input',()=>{
+      const hexInput=document.getElementById('hex-input');
+      const preview=document.getElementById('color-preview');
+      hexInput.value=nativePicker.value;
+      preview.style.background=nativePicker.value;
+    });
+  }
+});
+
 function stResetData(){
   if(!confirm('This will permanently delete ALL your stream++ data (homework, papers, logs, exams, reminders). This cannot be undone.\n\nAre you sure?'))return;
-  const keys=['st_r5','st_e5','st_l5','st_p5','st_x5','st_hw','st_name','st_ics','st_friends','st_lb_username','st_lb_emoji','st_lb_streak','st_lb_weekly','st_setup_done','st_night','st_fancy_cursor','st_perf','st_particles','st_blur','st_transitions','st_accent','st_notif'];
+  const keys=['st_r5','st_e5','st_l5','st_p5','st_x5','st_hw','st_name','st_ics','st_friends','st_lb_username','st_lb_emoji','st_lb_streak','st_lb_weekly','st_setup_done','st_night','st_fancy_cursor','st_perf','st_particles','st_blur','st_transitions','st_accent','st_accent_custom','st_notif'];
   keys.forEach(k=>localStorage.removeItem(k));
   showToast('Data reset. Reloading…');
   setTimeout(()=>location.reload(),1200);

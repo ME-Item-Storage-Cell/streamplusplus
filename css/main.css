@@ -1059,16 +1059,16 @@ body.night #ctx-night-item.active-night svg{stroke:#0f0f0f;opacity:.9}
   display:flex;flex-direction:column;align-items:center;
   padding:10px 0 14px;gap:2px;
   z-index:310;
-  /* don't animate border-radius (keep it constant); only animate width/background/position */
-  transition:width .34s cubic-bezier(.4,0,.2,1),background .2s,left .46s cubic-bezier(.34,1.2,.64,1),top .46s cubic-bezier(.34,1.2,.64,1);
-  will-change:width,left,top;user-select:none;
+  /* Animate width, left, top, border-radius for smooth pinning and opening (height snaps to avoid issues) */
+  transition:width .35s cubic-bezier(.4,0,.2,1),background .2s,left .35s cubic-bezier(.4,0,.2,1),top .35s cubic-bezier(.4,0,.2,1),border-radius .35s cubic-bezier(.4,0,.2,1);
+  will-change:width,left,top,border-radius;user-select:none;
 }
 #pill.open{width:216px;background:rgba(248,248,252,0.82)}
 #pill.pinned{
   position:fixed;
   left:0;top:0;
   width:222px;
-  height:100vh;
+  height:100vh !important;
   border-radius:0;
   border:none;
   border-right:1px solid var(--border);
@@ -1077,9 +1077,7 @@ body.night #ctx-night-item.active-night svg{stroke:#0f0f0f;opacity:.9}
   box-shadow:none;
   backdrop-filter:none;-webkit-backdrop-filter:none;
   background:var(--bg);
-  transition:none;
   will-change:auto;
-  overflow-y:auto;
 }
 body.night #pill.pinned{
   background:#0e0f12;
@@ -1089,7 +1087,7 @@ body.night #pill.pinned{
 #pill.pinned .ni{width:calc(100% - 24px);border-radius:12px;padding:0 12px;gap:10px;justify-content:flex-start;margin:0 12px}
 #pill.pinned .ni-lbl{max-width:none;opacity:1}
 #pill.pinned .pill-sep{width:calc(100% - 24px);margin:8px 12px}
-#pill.pinned #pill-btns{width:calc(100% - 24px);gap:8px;justify-content:flex-start;padding:0 12px;flex-wrap:nowrap;margin-top:8px;margin-bottom:16px}
+#pill.pinned #pill-btns{width:calc(100% - 24px);gap:8px;justify-content:flex-start;padding:0 12px;flex-wrap:nowrap;margin-top:auto;margin-bottom:16px}
 #pill.pinned #pill-grip{display:none}
 #pill-grip{width:100%;display:flex;justify-content:center;padding:4px 0 6px;cursor:grab;opacity:.28;transition:opacity .15s;flex-shrink:0}
 #pill-grip:hover{opacity:.65}#pill-grip:active{cursor:grabbing;opacity:1}
@@ -1161,7 +1159,7 @@ body.night #pill.pinned{
   top:0;right:0;bottom:0;
   left:0;
   overflow-y:auto;overflow-x:hidden;
-  transition:left .38s cubic-bezier(.4,0,.2,1);
+  transition:left .35s cubic-bezier(.4,0,.2,1);
   will-change:left;
 }
 
@@ -1753,9 +1751,49 @@ body.night .st-cursor-size-slider{background:rgba(255,255,255,0.15)}
 .st-col-swatch{width:28px;height:28px;border-radius:50%;cursor:none;transition:transform .15s,box-shadow .15s;border:2px solid transparent}
 .st-col-swatch:hover{transform:scale(1.18)}
 .st-col-swatch.act{box-shadow:0 0 0 2.5px var(--bg),0 0 0 4.5px currentColor;transform:scale(1.1)}
+.st-col-swatch-custom{background:var(--glass);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center}
+body.night .st-col-swatch-custom{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}
 
 /* Accent colour CSS vars (injected via JS) */
 :root{--accent:#6366f1}
+
+/* ══ COLOR PICKER MODAL ══════════════════════════════════════ */
+.color-picker-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:cpFadeIn .2s ease-out}
+.color-picker-modal.open{display:flex}
+@keyframes cpFadeIn{from{opacity:0}to{opacity:1}}
+.color-picker-panel{width:min(400px,calc(100vw - 40px));background:var(--bg);border:1px solid var(--border);border-radius:20px;box-shadow:0 32px 80px rgba(0,0,0,.25),0 2px 0 rgba(255,255,255,.35) inset;display:flex;flex-direction:column;animation:cpSlideIn .3s cubic-bezier(.34,1.1,.64,1) both}
+body.night .color-picker-panel{background:#0e0f12;border-color:rgba(255,255,255,.1);box-shadow:0 32px 80px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.06) inset}
+@keyframes cpSlideIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+
+.color-picker-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;flex-shrink:0}
+.color-picker-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.color-picker-close{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--glass);cursor:none;font-size:12px;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all .14s}
+.color-picker-close:hover{background:var(--text);color:var(--bg)}
+
+.color-picker-body{padding:20px;flex:1}
+.color-picker-preview-wrap{display:flex;align-items:center;gap:24px;margin-bottom:20px}
+.color-picker-preview-group{display:flex;flex-direction:column;align-items:center;gap:8px}
+.color-picker-picker-group{display:flex;flex-direction:column;align-items:center;gap:8px}
+.color-picker-label-small{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:-.01em;text-transform:uppercase}
+.color-picker-preview{width:48px;height:48px;border-radius:12px;border:2px solid var(--border);transition:background .2s}
+.native-color-picker{width:48px;height:48px;border:none;border-radius:12px;cursor:pointer;padding:0;background:transparent;appearance:none;-webkit-appearance:none}
+.native-color-picker::-webkit-color-swatch-wrapper{padding:0}
+.native-color-picker::-webkit-color-swatch{border:none;border-radius:10px}
+.native-color-picker::-moz-color-swatch{border:none;border-radius:10px}
+
+.color-picker-hex-wrap{display:flex;flex-direction:column;gap:8px}
+.color-picker-label{font-size:12px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.color-picker-hex-input{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--glass);color:var(--text);font-size:14px;font-family:'Geist Mono',monospace;letter-spacing:.02em;outline:none;transition:border-color .15s,box-shadow .15s}
+.color-picker-hex-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.color-picker-hex-input::placeholder{color:var(--t3)}
+body.night .color-picker-hex-input{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+
+.color-picker-footer{display:flex;gap:12px;padding:0 20px 20px;flex-shrink:0}
+.color-picker-btn{flex:1;padding:12px;border-radius:10px;font-size:13px;font-weight:600;cursor:none;transition:all .15s}
+.color-picker-btn-cancel{background:var(--glass);border:1px solid var(--border);color:var(--text)}
+.color-picker-btn-cancel:hover{background:var(--text);color:var(--bg)}
+.color-picker-btn-apply{background:var(--accent);border:none;color:#fff}
+.color-picker-btn-apply:hover{opacity:.9}
 
 /* ── Weekly toggle ── */
 .fr-time-toggle{display:flex;gap:2px;background:rgba(0,0,0,.05);border-radius:8px;padding:2px;margin-bottom:12px}
