@@ -441,20 +441,21 @@ applySB();
 
 /* ════ SUBJECT ICONS ════════════════════════════════════ */
 const SIC={
-  mathematics:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 4v16M4 12h16M6 6l12 12M18 6L6 18"/></svg>`,
-  english:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg>`,
-  science:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v8L5.5 18.5a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L15 11V3M9 3h6"/></svg>`,
-  music:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
-  commerce:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h18v4H3zM5 7v14M19 7v14M9 11h6M9 15h6"/></svg>`,
-  geography:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3c-3 4-3 14 0 18M12 3c3 4 3 14 0 18"/></svg>`,
-  history:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-  'history elective':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-  pdhpe:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
-  pe:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
-  'extra pe':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
-  careers:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>`,
-  volleyball:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3c3 3 6 6 0 18M12 3c-3 3-6 6 0 18M3 12h18"/></svg>`,
-  'roll call':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>`,
+  Mathematics:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 4v16M4 12h16M6 6l12 12M18 6L6 18"/></svg>`,
+  English:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 10h10M4 14h16M4 18h10"/></svg>`,
+  Science:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v8L5.5 18.5a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L15 11V3M9 3h6"/></svg>`,
+  Music:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13"/><circle cx="6" cy="19" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  Commerce:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h18v4H3zM5 7v14M19 7v14M9 11h6M9 15h6"/></svg>`,
+  Geography:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3c-3 4-3 14 0 18M12 3c3 4-3 14 0 18"/></svg>`,
+  History:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  'History Elective':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  PDHPE:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
+  PE:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
+  'Extra PE':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 20l3-7 4 3 4-3 3 7M8 13l4-8 4 8"/></svg>`,
+  Volleyball:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 3v18M3 12h18"/></svg>`,
+  Careers:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+  'Roll Call':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+  'IT Engineering':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
 };
 
 /* ════ TIMETABLE DATA ═══════════════════════════════════ */
@@ -516,7 +517,10 @@ function tick(){
     T.textContent=`${String(rm).padStart(2,'0')}:${String(rs).padStart(2,'0')}`;
     G.style.width='0%';if(!pinnedSubj)updateSubjTile(null);
   }else if(hasTTData){
-    T.textContent='done';L.textContent='school ended';P.textContent='See you tomorrow';R.textContent='';G.style.width='100%';if(!pinnedSubj)updateSubjTile(null);
+    let displayHours=h;
+    if(use12hTime)displayHours=h%12||12;
+    T.textContent=`${String(displayHours).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    L.textContent='school ended';P.textContent='See you tomorrow';R.textContent='';G.style.width='100%';if(!pinnedSubj)updateSubjTile(null);
   }else{
     let displayHours=h;
     if(use12hTime)displayHours=h%12||12;
@@ -661,7 +665,7 @@ function renderTT(){
         if(p&&p.subj){
           const isNow=cur&&cur.subj===p.subj&&cur.l===p.l&&new Date().getDay()===di+1;
           cell.className='ttc'+(isNow?' now':'');
-          const icon=p.icon&&TT_ICONS[p.icon]?TT_ICONS[p.icon]:(SIC[p.subj]||SIC['roll call']);
+          const icon=p.icon&&TT_ICONS[p.icon]?TT_ICONS[p.icon]:(SIC[p.subj]||SIC[p.subj.toLowerCase()]||SIC['Roll Call']);
           const sc=subjColour(p.subj);
           if(sc)cell.style.borderTopColor=sc;
           cell.innerHTML=`<div class="tt-sj"><div class="tt-ic">${icon}</div><div><div class="ttn">${p.subj}</div><div class="ttr">${p.room||''}</div></div></div>`;
@@ -675,7 +679,7 @@ function renderTT(){
       }else if(p&&p.subj){
         const isNow=cur&&cur.subj===p.subj&&cur.l===p.l&&new Date().getDay()===di+1;
         cell.className='ttc'+(isNow?' now':'');
-        const icon=p.icon&&TT_ICONS[p.icon]?TT_ICONS[p.icon]:(SIC[p.subj]||SIC['roll call']);
+        const icon=p.icon&&TT_ICONS[p.icon]?TT_ICONS[p.icon]:(SIC[p.subj]||SIC[p.subj.toLowerCase()]||SIC['Roll Call']);
         const sc=subjColour(p.subj);
         if(sc)cell.style.borderTopColor=sc;
         cell.innerHTML=`<div class="tt-sj"><div class="tt-ic">${icon}</div><div><div class="ttn">${p.subj}</div><div class="ttr">${p.room||''}</div></div></div>`;
@@ -2844,6 +2848,16 @@ function obHandleFile(file){
   reader.readAsText(file);
 }
 
+// Helper function to capitalize first letter of each word
+function toTitleCase(str){
+  const acronyms=['pdhpe','it'];
+  return str.toLowerCase().split(' ').map(word=>{
+    // Keep specific acronyms uppercase
+    if(acronyms.includes(word))return word.toUpperCase();
+    return word.charAt(0).toUpperCase()+word.slice(1);
+  }).join(' ');
+}
+
 // ICS parser — extracts weekly timetable into TT-compatible format
 function parseICS(text){
   try{
@@ -2885,7 +2899,9 @@ function parseICS(text){
         subj=subj.replace(/\s*\d+\s*$/, '').trim();
         if(!subj)subj='unknown';
       }
-      // Period label from description
+      // Apply title case to subject name
+      subj=toTitleCase(subj);
+      // Period label from description (keep lowercase for matching)
       const periodM=desc.match(/Period:\s*([^\\\n\r]+)/i);
       const periodLbl=periodM?periodM[1].trim().toLowerCase():'period';
       // Room from location
@@ -2996,31 +3012,33 @@ function applyICS(data){
 
 /* Build subject lists from whatever is actually in the timetable.
    Falls back to a hardcoded base set if TT is empty. */
-const BASE_SUBJECTS=['mathematics','english','science','music','commerce','geography','history','history elective','pdhpe','pe','extra pe','careers'];
+const BASE_SUBJECTS=['Mathematics','English','Science','Music','Commerce','Geography','History','History Elective','PDHPE','PE','Extra PE','Careers','IT Engineering'];
 
 /* Subject → pastel colour map */
 const SUBJ_COLOURS_DEFAULT={
-  'mathematics':   '#f28b82',
-  'english':       '#7bafd4',
-  'science':       '#81c995',
-  'history':       '#f5c26b',
-  'history elective':'#f5c26b',
-  'geography':     '#81c995',
-  'music':         '#c084fc',
-  'commerce':      '#fdba74',
-  'pdhpe':         '#67c1b5',
-  'pe':            '#67c1b5',
-  'extra pe':      '#67c1b5',
-  'careers':       '#94a3b8',
-  'volleyball':    '#7bafd4',
-  'roll call':     '#94a3b8',
+  'Mathematics':   '#f28b82',
+  'English':       '#7bafd4',
+  'Science':       '#81c995',
+  'History':       '#f5c26b',
+  'History Elective':'#f5c26b',
+  'Geography':     '#81c995',
+  'Music':         '#c084fc',
+  'Commerce':      '#fdba74',
+  'PDHPE':         '#67c1b5',
+  'PE':            '#67c1b5',
+  'Extra PE':      '#67c1b5',
+  'Careers':       '#94a3b8',
+  'Volleyball':    '#7bafd4',
+  'Roll Call':     '#94a3b8',
+  'IT Engineering':'#a78bfa',
 };
 // Mutable — persisted to localStorage so user customisations survive refresh
 let SUBJ_COLOURS={...SUBJ_COLOURS_DEFAULT,...JSON.parse(localStorage.getItem('st_subj_colours')||'{}')};
 function saveSubjColours(){localStorage.setItem('st_subj_colours',JSON.stringify(SUBJ_COLOURS));}
 function subjColour(subj){
   if(!subj)return null;
-  return SUBJ_COLOURS[subj.toLowerCase()]||null;
+  // Try title case first, then lowercase for backward compatibility
+  return SUBJ_COLOURS[subj]||SUBJ_COLOURS[subj.toLowerCase()]||null;
 }
 function subjTint(subj){
   const c=subjColour(subj);return c?c+'1f':null;
@@ -3972,15 +3990,17 @@ function saveTTEdit(){
   }
 
   // Also update icon in SIC
-  if(newSubj&&newIcon&&TT_ICONS[newIcon]) SIC[newSubj]=TT_ICONS[newIcon];
+  if(newSubj&&newIcon&&TT_ICONS[newIcon]) SIC[toTitleCase(newSubj)]=TT_ICONS[newIcon];
 
   // Apply colour choice
   const finalSubj=newSubj||oldSubj;
+  const finalSubjTitle=toTitleCase(finalSubj);
   if(finalSubj){
     if(ttSelectedColour===null){
-      delete SUBJ_COLOURS[finalSubj];
+      delete SUBJ_COLOURS[finalSubjTitle];
+      delete SUBJ_COLOURS[finalSubj.toLowerCase()];
     }else if(ttSelectedColour){
-      SUBJ_COLOURS[finalSubj]=ttSelectedColour;
+      SUBJ_COLOURS[finalSubjTitle]=ttSelectedColour;
     }
     saveSubjColours();
   }
@@ -4548,7 +4568,9 @@ function mhUpdateCountdown(){
     if(arcEl)arcEl.style.strokeDashoffset=(628*pct).toFixed(1);
     if(nextEl)nextEl.textContent=nxt.room?`room ${nxt.room}`:'';
   }else{
-    timerEl.textContent='done';
+    let displayHours=now.getHours();
+    if(use12hTime)displayHours=displayHours%12||12;
+    timerEl.textContent=`${String(displayHours).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     if(labelEl)labelEl.textContent='no more classes';
     if(subEl)subEl.textContent='see you tomorrow';
     if(arcEl)arcEl.style.strokeDashoffset='628';

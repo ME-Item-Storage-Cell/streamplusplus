@@ -356,8 +356,8 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
     pointer-events:none;
   }
   .mh-countdown-label{
-    font-size:10px;font-family:'Geist Mono',monospace;
-    color:rgba(255,255,255,.4);text-transform:uppercase;
+    font-size:12px;font-family:'Geist Mono',monospace;
+    color:rgba(255,255,255,.5);text-transform:uppercase;
     letter-spacing:.16em;margin-bottom:8px;
   }
   .mh-countdown-timer{
@@ -366,7 +366,7 @@ body.night .sr-item:hover{background:rgba(255,255,255,.07)}
     font-family:'Geist Mono',monospace;
   }
   .mh-countdown-sub{
-    font-size:14px;color:rgba(255,255,255,.6);
+    font-size:16px;font-family:'Geist Mono',monospace;color:rgba(255,255,255,.7);
     margin-top:10px;font-weight:500;letter-spacing:-.01em;
     text-align:center;max-width:200px;
   }
@@ -1449,8 +1449,10 @@ body.night .home-timer{
   text-shadow:none;
 }
 .h-meta-row{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;justify-content:center}
-.h-meta-label{font-family:'Geist Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--t3)}
-.h-meta-period{font-size:17px;font-weight:500;color:var(--text);letter-spacing:-.02em}
+.h-meta-label{font-family:'Geist Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:rgba(0,0,0,.5)}
+body.night .h-meta-label{color:rgba(255,255,255,.6)}
+.h-meta-period{font-size:19px;font-weight:500;font-family:'Geist Mono',monospace;color:rgba(0,0,0,.7);letter-spacing:-.02em}
+body.night .h-meta-period{color:rgba(255,255,255,.8)}
 .h-meta-room{font-family:'Geist Mono',monospace;font-size:13px;color:var(--t2)}
 .h-prog-track{width:min(460px,58vw);height:2px;background:rgba(0,0,0,.09);border-radius:10px;overflow:hidden}
 .h-prog-fill{height:100%;background:var(--text);border-radius:10px;transition:width 1s linear}
