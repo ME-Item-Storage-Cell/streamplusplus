@@ -492,7 +492,14 @@ function tick(){
   const T=document.getElementById('h-timer'),L=document.getElementById('h-lbl'),P=document.getElementById('h-per'),R=document.getElementById('h-room'),G=document.getElementById('h-prog');
   if(!T)return;
   const{cur,nxt,weekend}=getCurNxt();
-  if(weekend){T.textContent='—';L.textContent='no school';P.textContent='Weekend';R.textContent='';G.style.width='0%';if(!pinnedSubj)updateSubjTile(null);return;}
+  if(weekend){
+    let displayHours=h;
+    if(use12hTime)displayHours=h%12||12;
+    T.textContent=`${String(displayHours).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    L.textContent='no school';P.textContent='Weekend';R.textContent='';G.style.width='0%';
+    if(!pinnedSubj)updateSubjTile(null);
+    return;
+  }
   
   // Check if any timetable data exists
   const hasTTData=Object.values(TT).some(day=>day.length>0);
@@ -1994,6 +2001,9 @@ document.addEventListener('keydown',e=>{
     if(document.getElementById('settings-overlay')?.classList.contains('open')){closeSettings();return;}
     if(document.getElementById('fr-detail')?.classList.contains('open')){frCloseDetail();return;}
     if(document.getElementById('fr-add-modal')?.classList.contains('open')){frCloseAdd();return;}
+    if(ctxOpen){closeCtx();return;}
+    if(_cddOpen){cddClose();return;}
+    if(qaOpen){closeQA();return;}
     closeQM();closeRM();closeSC();closeResetModal();closeICSModal();closeHWModal();closeTTEdit();closeSearch();return;
   }
   // Space = toggle stopwatch (when on study page, stopwatch tab, not typing)
@@ -2167,12 +2177,12 @@ async function lbClaimUsername(){
 async function lbSearch(){
   const inp=document.getElementById('lb-search-inp');if(!inp)return;
   const q=inp.value.trim().toLowerCase().replace(/^@/,'');
-  if(!q){lbMsg2('Enter a username to search.','#e53e3e');return;}
-  if(!sbUserId){lbMsg2('Sign in first.','#e53e3e');return;}
+  if(!q){lbMsg('Enter a username to search.','#e53e3e','lb-add-msg');return;}
+  if(!sbUserId){lbMsg('Sign in first.','#e53e3e','lb-add-msg');return;}
   const resultEl=document.getElementById('lb-search-result');
   resultEl.innerHTML='<span style="font-size:12px;color:var(--t3)">Searching…</span>';
   const r=await sbFetch(`/rest/v1/leaderboard?username=eq.${encodeURIComponent(q)}&select=user_id,username,stats`);
-  if(!r.ok){resultEl.innerHTML='';lbMsg2('Search failed.','#e53e3e');return;}
+  if(!r.ok){resultEl.innerHTML='';lbMsg('Search failed.','#e53e3e','lb-add-msg');return;}
   const rows=await r.json();
   if(!rows.length){resultEl.innerHTML='<span style="font-size:12px;color:var(--t3)">No user found.</span>';return;}
   const u=rows[0];
@@ -2194,7 +2204,7 @@ function lbAddFriend(user_id,username){
   if(lbFriends.some(f=>f.user_id===user_id))return;
   lbFriends.push({user_id,username});
   sv('st_friends',lbFriends);
-  lbMsg2(`Added @${username} ✓`,'#16a34a');
+  lbMsg(`Added @${username} ✓`,'#16a34a','lb-add-msg');
   document.getElementById('lb-search-result').innerHTML='';
   document.getElementById('lb-search-inp').value='';
   lbRefresh();
@@ -2246,10 +2256,6 @@ function frSetTimePapers(mode,el){
   if(el)el.classList.add('act');
   renderLBSection('papers',lbLastEntries);
 }
-// Keep old frSetTab/frSetTime as no-ops for safety
-function frSetTab(){}
-function frSetTime(){}
-
 async function renderLB(){
   const myUsername=localStorage.getItem('st_lb_username');
   const entries=[];
@@ -2623,13 +2629,8 @@ function lbChangeUsername(){
   lbRenderProfile();
 }
 
-function lbMsg(msg,col){
-  const el=document.getElementById('lb-msg');if(!el)return;
-  el.style.color=col;el.textContent=msg;
-  setTimeout(()=>{if(el.textContent===msg)el.textContent='';},3000);
-}
-function lbMsg2(msg,col){
-  const el=document.getElementById('lb-add-msg');if(!el)return;
+function lbMsg(msg,col,elId='lb-msg'){
+  const el=document.getElementById(elId);if(!el)return;
   el.style.color=col;el.textContent=msg;
   setTimeout(()=>{if(el.textContent===msg)el.textContent='';},3000);
 }
@@ -2662,13 +2663,6 @@ function frRenderPill(){
     pilSub.textContent='sign in to compete';
     pilAvatar.textContent='?';pilAvatar.style.fontSize='';
   }
-}
-
-function frSetTab(mode, el){
-  lbMode=mode;
-  document.querySelectorAll('.fr-lb-tab').forEach(t=>t.classList.remove('act'));
-  if(el)el.classList.add('act');
-  renderLB();
 }
 
 function frOpenAdd(){
@@ -3151,9 +3145,6 @@ document.addEventListener('contextmenu',e=>{
 
 document.addEventListener('click',e=>{
   if(ctxOpen&&!ctxMenu.contains(e.target))closeCtx();
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&ctxOpen)closeCtx();
 });
 // Scroll closes it too
 document.addEventListener('scroll',()=>closeCtx(),true);
@@ -4124,7 +4115,6 @@ function cddClose(){
 
 // Close on outside click
 document.addEventListener('click',()=>cddClose());
-document.addEventListener('keydown',e=>{if(e.key==='Escape')cddClose();});
 
 // Intercept programmatic .value sets on selects so trigger stays in sync
 function cddSyncAll(){
@@ -4363,9 +4353,6 @@ function qaOpenEv(){
   openQM(new Date().toISOString().split('T')[0]);
 }
 
-// Close on Esc
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&qaOpen)closeQA();});
-
 /* ════ MOBILE TOUCH + SWIPE ══════════════════════════════ */
 const isMobile=()=>window.innerWidth<=640;
 
@@ -4535,7 +4522,9 @@ function mhUpdateCountdown(){
   const {cur,nxt,weekend}=getCurNxt();
 
   if(weekend){
-    timerEl.textContent='——';
+    let displayHours=now.getHours();
+    if(use12hTime)displayHours=displayHours%12||12;
+    timerEl.textContent=`${String(displayHours).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     if(labelEl)labelEl.textContent='weekend';
     if(subEl)subEl.textContent='enjoy your break';
     if(arcEl)arcEl.style.strokeDashoffset='628';
@@ -4787,9 +4776,6 @@ function mhFabTap(){
     if(fab)fab.classList.add('open');
   }
 }
-// Reset FAB rotate when sheet closes
-const _origMhClose=window.mhClose;
-
 /* ── DRAG-TO-REORDER TILES ───────────────────────────── */
 function mhDragSetup(){
   const container=document.querySelector('.mh-tiles');
@@ -4923,16 +4909,6 @@ function mhSaveEx(){
 
 window.addEventListener('resize',()=>{if(window.innerWidth<=640)mhInit();});
 
-
-// Keep mobile nav in sync when goTo is called from keyboard/other sources
-const _origGoTo=goTo;
-// (goTo is already defined; we patch the mni sync inside goTo via curPage update)
-// Instead, sync after each goTo via a small wrapper
-function syncMobileNav(){
-  document.querySelectorAll('.mni').forEach(n=>{
-    n.classList.toggle('act',n.dataset.page===curPage);
-  });
-}
 
 // Swipe detection on page-stack
 (function(){
